@@ -5,6 +5,8 @@ import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.data.Event;
 import edu.colostate.cs.worker.stream.Stream;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: amila
@@ -22,5 +24,9 @@ public class ElementContainer implements Container {
 
     public void emit(Event event) throws MessageProcessingException {
         this.stream.emit(event);
+    }
+
+    public void emit(List<Event> events) throws MessageProcessingException {
+        this.stream.emit(events);
     }
 }

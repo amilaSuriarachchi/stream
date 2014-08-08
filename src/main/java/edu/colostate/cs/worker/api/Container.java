@@ -3,6 +3,8 @@ package edu.colostate.cs.worker.api;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.data.Event;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: amila
@@ -13,5 +15,7 @@ import edu.colostate.cs.worker.data.Event;
 public interface Container {
 
      public void emit(Event event) throws MessageProcessingException;
+
+     public void emit(List<Event> events) throws MessageProcessingException;
 
 }

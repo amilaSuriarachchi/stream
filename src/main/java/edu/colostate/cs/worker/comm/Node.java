@@ -17,6 +17,20 @@ public class Node {
         this.ipAddress = ipAddress;
     }
 
+    @Override
+    public int hashCode() {
+        return this.port + this.ipAddress.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Node){
+            Node newNode = (Node) obj;
+            return (this.port == newNode.port) && (this.ipAddress.equals(newNode.ipAddress));
+        }
+        return false;
+    }
+
     public String getIpAddress() {
         return ipAddress;
     }
@@ -32,4 +46,6 @@ public class Node {
     public void setPort(int port) {
         this.port = port;
     }
+
+
 }

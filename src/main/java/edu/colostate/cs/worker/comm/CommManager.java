@@ -6,6 +6,8 @@ import edu.colostate.cs.worker.comm.server.MessageListener;
 import edu.colostate.cs.worker.comm.server.ServerManager;
 import edu.colostate.cs.worker.data.Message;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: amila
@@ -32,6 +34,12 @@ public class CommManager {
     public void sendEvent(Message message, Node targetNode) throws MessageProcessingException {
 
         this.clientManager.sendEvent(message, targetNode);
+
+    }
+
+    public void sendEvents(List<Message> messages, Node targetNode) throws MessageProcessingException {
+
+        this.clientManager.sendEvents(messages, targetNode);
 
     }
 }

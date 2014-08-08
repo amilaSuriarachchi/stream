@@ -6,6 +6,7 @@ import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.data.Event;
 import edu.colostate.cs.worker.data.Message;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,4 +59,35 @@ public class KeyStream implements Stream {
         }
         this.commManager.sendEvent(message, this.keyMap.get(event.getKey()));
     }
+
+    public void emit(List<Event> events) throws MessageProcessingException {
+
+        Map<Node, List<Message>> nodeMessageMap = new HashMap<Node, List<Message>>();
+        // populate this for all nodes
+        for (Node node : this.nodes){
+            nodeMessageMap.put(node, new ArrayList<Message>());
+        }
+        Message message = null;
+        Node nodeToSend = null;
+
+        for (Event event : events){
+            message = new Message(this.processor, event);
+
+            if (!this.keyMap.containsKey(event.getKey())) {
+                synchronized (this.keyMap) {
+                    if (!this.keyMap.containsKey(event.getKey())) {
+                        this.keyMap.put(event.getKey(), this.nodes.get(this.nextNodeToAssign));
+                        this.nextNodeToAssign = (this.nextNodeToAssign + 1) % this.nodes.size();
+                    }
+                }
+            }
+            nodeToSend = this.keyMap.get(event.getKey());
+            nodeMessageMap.get(nodeToSend).add(message);
+        }
+
+        for (Node node : this.nodes){
+            this.commManager.sendEvents(nodeMessageMap.get(node), node);
+        }
+    }
+
 }
