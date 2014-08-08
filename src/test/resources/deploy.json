@@ -1,0 +1,18 @@
+{
+    "processors" : [
+        { "name" : "eventCounter",
+          "className" : "edu.colostate.cs.sample.EventCounter" ,
+          "nodes" : [
+              { "ip" : "localhost", "port" : "4000"}
+           ]
+        }
+    ],
+    "adapters" : [
+        { "name" : "eventProducer",
+            "className" : "edu.colostate.cs.sample.EventProducer" ,
+            "nodes" : [
+                { "ip" : "localhost", "port" : "4000"}
+            ]
+        }
+    ]
+}

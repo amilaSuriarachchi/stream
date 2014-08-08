@@ -1,0 +1,9 @@
+<topology name="test">
+    <processElement name="wordSpliter" instances="1" class="">
+
+    </processElement>
+    <processElement name="wordCounter" instances="1" class="">
+        <inputProcessElement name = "wordSpliter" />
+    </processElement>
+
+</topology>
