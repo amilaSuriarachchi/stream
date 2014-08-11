@@ -11,8 +11,17 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class StreamDBO {
-
+    /**
+     * target processor to send the message. Always one stream has one target processor
+     */
     private String processor;
+    /**
+     * Type of the stream. This can be a key stream or a random stream
+     */
+    private String type;
+    /**
+     * Node set of which the processors has deployed.
+     */
     private List<NodeDBO> nodes = new ArrayList<NodeDBO>();
 
     public String getProcessor() {
@@ -21,6 +30,14 @@ public class StreamDBO {
 
     public void setProcessor(String processor) {
         this.processor = processor;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<NodeDBO> getNodes() {

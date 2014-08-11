@@ -1,5 +1,7 @@
 package edu.colostate.cs.worker.stream;
 
+import edu.colostate.cs.worker.comm.CommManager;
+import edu.colostate.cs.worker.comm.Node;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.data.Event;
 

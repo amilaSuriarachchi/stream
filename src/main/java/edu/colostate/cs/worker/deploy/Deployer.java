@@ -13,6 +13,7 @@ import edu.colostate.cs.worker.comm.Node;
 import edu.colostate.cs.worker.comm.exception.DeploymentException;
 import edu.colostate.cs.worker.stream.KeyStream;
 import edu.colostate.cs.worker.stream.Stream;
+import edu.colostate.cs.worker.stream.StreamFactory;
 import edu.colostate.cs.worker.util.Constants;
 
 import java.io.*;
@@ -80,13 +81,15 @@ public class Deployer {
             StreamDBO streamDBO = elementDBO.getStream();
             Stream stream = null;
             if (streamDBO != null) {
+
                 List<Node> nodes = new ArrayList<Node>();
                 for (NodeDBO nodeDBO : streamDBO.getNodes()) {
                     nodes.add(new Node(nodeDBO.getPort(), nodeDBO.getIp()));
                 }
-                stream = new KeyStream(streamDBO.getProcessor(), nodes, this.commManager);
-            } else {
-                stream = new KeyStream();
+                stream = StreamFactory.getStream(streamDBO.getType(),
+                                                 streamDBO.getProcessor(),
+                                                 nodes,
+                                                 this.commManager);
             }
             ElementContainer elementContainer = new ElementContainer(stream);
             Map<String, String> parameters = new HashMap<String, String>();
