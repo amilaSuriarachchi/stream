@@ -6,12 +6,10 @@ import edu.colostate.cs.worker.ElementContainer;
 import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.api.Adaptor;
 import edu.colostate.cs.worker.api.Element;
-import edu.colostate.cs.worker.api.Parameter;
 import edu.colostate.cs.worker.api.Processor;
 import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.Node;
 import edu.colostate.cs.worker.comm.exception.DeploymentException;
-import edu.colostate.cs.worker.stream.KeyStream;
 import edu.colostate.cs.worker.stream.Stream;
 import edu.colostate.cs.worker.stream.StreamFactory;
 import edu.colostate.cs.worker.util.Constants;
@@ -33,29 +31,21 @@ public class Deployer {
 
     private WorkerContainer workerContainer;
     private CommManager commManager;
-    private String folder;
+    private String homeFolder;
 
-    public Deployer(WorkerContainer workerContainer, CommManager commManager, String folder) {
+    public Deployer(WorkerContainer workerContainer, CommManager commManager, String homeFolder) {
         this.workerContainer = workerContainer;
         this.commManager = commManager;
-        this.folder = folder;
+        this.homeFolder = homeFolder;
     }
 
     public void deploy() throws DeploymentException {
-        // for the moment lets assume there is one deployment file in the deployer folder at start up time.
-        // latter this can be improved to have auto deployment feaatures.
-        File file = new File(this.folder);
 
-        File[] artefacts = file.listFiles();
-        for (File artefact : artefacts) {
-            try {
-                deploy(new FileInputStream(artefact));
-
-            } catch (FileNotFoundException e) {
-                throw new DeploymentException("Invalid file ", e);
-            }
+        try {
+            deploy(new FileInputStream(this.homeFolder + File.separator + Constants.DEPLOY_FILE_NAME));
+        } catch (FileNotFoundException e) {
+            throw new DeploymentException("Invalid file ", e);
         }
-
 
     }
 
@@ -87,9 +77,9 @@ public class Deployer {
                     nodes.add(new Node(nodeDBO.getPort(), nodeDBO.getIp()));
                 }
                 stream = StreamFactory.getStream(streamDBO.getType(),
-                                                 streamDBO.getProcessor(),
-                                                 nodes,
-                                                 this.commManager);
+                        streamDBO.getProcessor(),
+                        nodes,
+                        this.commManager);
             }
             ElementContainer elementContainer = new ElementContainer(stream);
             Map<String, String> parameters = new HashMap<String, String>();

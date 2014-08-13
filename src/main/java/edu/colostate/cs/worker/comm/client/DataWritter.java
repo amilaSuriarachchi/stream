@@ -1,6 +1,7 @@
 package edu.colostate.cs.worker.comm.client;
 
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
+import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.util.Constants;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class DataWritter extends OutputStream {
     public DataWritter() {
         this.lock = new ReentrantLock();
         this.condition = this.lock.newCondition();
-        this.byteBuffer = ByteBuffer.allocate(Constants.WRITE_BUFFER_SIZE);
+        this.byteBuffer = ByteBuffer.allocate(Configurator.getInstance().getByteBufferSize());
         this.mode = BUFFER_WRITE_MODE;
     }
 

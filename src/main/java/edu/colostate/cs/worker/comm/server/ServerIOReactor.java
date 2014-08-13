@@ -1,5 +1,7 @@
 package edu.colostate.cs.worker.comm.server;
 
+import edu.colostate.cs.worker.config.Configurator;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
@@ -44,7 +46,7 @@ public class ServerIOReactor implements Runnable {
 
             List<ChannelReactor> channelReactors = new ArrayList<ChannelReactor>();
             //create channel reactors according to the number of processors
-            int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+            int numberOfProcessors = Configurator.getInstance().getIoThreads();
             for (int i = 0; i < numberOfProcessors; i++) {
                 channelReactors.add(new ChannelReactor(this.serverStreamHandler));
             }

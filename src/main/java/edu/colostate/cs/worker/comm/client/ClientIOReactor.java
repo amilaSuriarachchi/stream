@@ -1,6 +1,7 @@
 package edu.colostate.cs.worker.comm.client;
 
 import edu.colostate.cs.worker.comm.Node;
+import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.util.Constants;
 
 import java.io.IOException;
@@ -42,11 +43,9 @@ public class ClientIOReactor implements Runnable {
         try {
             Selector selector = Selector.open();
 
-
             List<ChannelReactor> channelReactors = new ArrayList<ChannelReactor>();
-
             //create channel reactors according to the number of processors
-            int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+            int numberOfProcessors = Configurator.getInstance().getIoThreads();
             for (int i = 0; i < numberOfProcessors; i++) {
                 channelReactors.add(new ChannelReactor());
             }
@@ -66,7 +65,7 @@ public class ClientIOReactor implements Runnable {
                 while ((clientConnection = this.pendingClientConnections.poll()) != null) {
                     Node targetNode = clientConnection.getTargetNode();
                     // create connections for that
-                    for (int i = 0; i < Constants.CLIENT_CONNECTION_POOL_SIZE; i++) {
+                    for (int i = 0; i < Configurator.getInstance().getTcpConnections(); i++) {
                         SocketChannel socketChannel = SocketChannel.open();
                         socketChannel.configureBlocking(false);
                         socketChannel.connect(new InetSocketAddress(targetNode.getIpAddress(), targetNode.getPort()));

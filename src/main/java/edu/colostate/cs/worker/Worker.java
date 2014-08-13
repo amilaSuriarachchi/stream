@@ -2,8 +2,11 @@ package edu.colostate.cs.worker;
 
 import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.exception.DeploymentException;
+import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.deploy.Deployer;
+import edu.colostate.cs.worker.util.Constants;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,12 +17,14 @@ public class Worker {
 
     Logger logger = Logger.getLogger(Worker.class.getName());
 
-    public void start(int port, String deployFolder) {
+    public void start(int port, String homeFolder) {
 
-        WorkerContainer workerContainer = new WorkerContainer();
-        CommManager commManager = new CommManager(port, workerContainer);
-        Deployer deployer = new Deployer(workerContainer, commManager, deployFolder);
         try {
+            WorkerContainer workerContainer = new WorkerContainer();
+            Configurator.getInstance().configure(homeFolder + File.separator + Constants.CONFIG_FILE_NAME);
+
+            CommManager commManager = new CommManager(port, workerContainer);
+            Deployer deployer = new Deployer(workerContainer, commManager, homeFolder);
             deployer.deploy();
             commManager.start();
             workerContainer.startAdapters();

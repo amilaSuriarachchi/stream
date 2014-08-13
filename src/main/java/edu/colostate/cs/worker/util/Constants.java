@@ -9,11 +9,11 @@ package edu.colostate.cs.worker.util;
  */
 public interface Constants {
 
-    public static final int CLIENT_CONNECTION_POOL_SIZE = 20;
-    public static final int WRITE_BUFFER_SIZE = 4096;
-
     public static final String STREAM_TYPE_KEY = "key";
     public static final String STREAM_TYPE_RANDOM = "random";
+
+    public static final String CONFIG_FILE_NAME = "config.json";
+    public static final String DEPLOY_FILE_NAME = "deploy.json";
 
 
 

@@ -1,6 +1,7 @@
 package edu.colostate.cs.worker.comm.server;
 
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
+import edu.colostate.cs.worker.config.Configurator;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -42,7 +43,7 @@ public class DataReader extends InputStream {
         this.condition = this.lock.newCondition();
         this.mode = BUFFER_WRITE_MODE;
         this.start = true;
-        this.byteBuffer = ByteBuffer.allocate(1024);
+        this.byteBuffer = ByteBuffer.allocate(Configurator.getInstance().getByteBufferSize());
         this.dataInput = new DataInputStream(this);
     }
 

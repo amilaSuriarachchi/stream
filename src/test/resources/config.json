@@ -1,0 +1,6 @@
+{
+    "ioThreads": 4,
+    "workerPoolSize" : 500,
+    "tcpConnections" : 20,
+    "byteBufferSize" : 1024
+}

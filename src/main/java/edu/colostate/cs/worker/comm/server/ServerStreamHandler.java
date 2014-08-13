@@ -1,6 +1,7 @@
 package edu.colostate.cs.worker.comm.server;
 
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
+import edu.colostate.cs.worker.config.Configurator;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +20,7 @@ public class ServerStreamHandler {
     private MessageListener messageListener;
 
     public ServerStreamHandler(MessageListener messageListener) {
-        this.executor = Executors.newFixedThreadPool(500);
+        this.executor = Executors.newFixedThreadPool(Configurator.getInstance().getWorkerPoolSize());
         this.messageListener = messageListener;
     }
 
