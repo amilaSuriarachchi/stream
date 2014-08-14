@@ -14,8 +14,8 @@ public interface Constants {
     public static final String STREAM_TYPE_KEY = "key";
     public static final String STREAM_TYPE_RANDOM = "random";
 
-    public static final String CONFIG_FILE_NAME = "config.json";
-    public static final String DEPLOY_FILE_NAME = "deploy.json";
+    public static final String CONFIG_FILE_NAME = "conf" + File.separator + "config.json";
+    public static final String DEPLOY_FOLDER = "deploy";
 
     public static final String CLUSTER_FILE_NAME = "conf" + File.separator + "cluster.json";
     public static final String GRAPHS_FOLDER = "graphs";

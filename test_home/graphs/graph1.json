@@ -23,18 +23,6 @@
                     "type" : "key"
                 }
             ]
-        } ,
-        {
-            "name": "testProcessor",
-            "className": "edu.colostate.cs.count.TestProcessor",
-            "cluster" : "relay",
-            "instances" : 2,
-            "receivers" :[
-                {
-                    "name" : "eventProducer",
-                    "type" : "random"
-                }
-            ]
         }
     ],
     "adapters": [

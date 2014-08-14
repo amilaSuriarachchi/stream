@@ -41,12 +41,15 @@ public class Deployer {
 
     public void deploy() throws DeploymentException {
 
-        try {
-            deploy(new FileInputStream(this.homeFolder + File.separator + Constants.DEPLOY_FILE_NAME));
-        } catch (FileNotFoundException e) {
-            throw new DeploymentException("Invalid file ", e);
+        //deploy all the files in the deploy folder
+        File deployFolder = new File(this.homeFolder + File.separator + Constants.DEPLOY_FOLDER);
+        for (File file : deployFolder.listFiles()) {
+            try {
+                deploy(new FileInputStream(file));
+            } catch (FileNotFoundException e) {
+                throw new DeploymentException("Invalid file ", e);
+            }
         }
-
     }
 
     public void deploy(InputStream deployFile) throws DeploymentException {
