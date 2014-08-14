@@ -9,10 +9,10 @@ import edu.colostate.cs.worker.api.Element;
 import edu.colostate.cs.worker.api.Processor;
 import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.Node;
-import edu.colostate.cs.worker.comm.exception.DeploymentException;
+import edu.colostate.cs.exception.DeploymentException;
 import edu.colostate.cs.worker.stream.Stream;
 import edu.colostate.cs.worker.stream.StreamFactory;
-import edu.colostate.cs.worker.util.Constants;
+import edu.colostate.cs.util.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -68,10 +68,9 @@ public class Deployer {
         try {
             Class pEClass = Class.forName(elementDBO.getClassName());
             Element element = (Element) pEClass.newInstance();
-            StreamDBO streamDBO = elementDBO.getStream();
+            List<Stream> streams = new ArrayList<Stream>();
             Stream stream = null;
-            if (streamDBO != null) {
-
+            for (StreamDBO streamDBO : elementDBO.getStreams()) {
                 List<Node> nodes = new ArrayList<Node>();
                 for (NodeDBO nodeDBO : streamDBO.getNodes()) {
                     nodes.add(new Node(nodeDBO.getPort(), nodeDBO.getIp()));
@@ -80,8 +79,10 @@ public class Deployer {
                         streamDBO.getProcessor(),
                         nodes,
                         this.commManager);
+                streams.add(stream);
             }
-            ElementContainer elementContainer = new ElementContainer(stream);
+
+            ElementContainer elementContainer = new ElementContainer(streams);
             Map<String, String> parameters = new HashMap<String, String>();
             if (elementDBO.getParameters() != null) {
                 for (ParameterDBO parameterDBO : elementDBO.getParameters()) {

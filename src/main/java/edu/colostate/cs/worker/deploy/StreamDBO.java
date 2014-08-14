@@ -24,6 +24,10 @@ public class StreamDBO {
      */
     private List<NodeDBO> nodes = new ArrayList<NodeDBO>();
 
+    public void addNode(String ip, int port){
+        this.nodes.add(new NodeDBO(ip, port));
+    }
+
     public String getProcessor() {
         return processor;
     }

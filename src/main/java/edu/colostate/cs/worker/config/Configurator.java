@@ -2,8 +2,7 @@ package edu.colostate.cs.worker.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import edu.colostate.cs.worker.comm.exception.DeploymentException;
-import edu.colostate.cs.worker.deploy.WorkerDBO;
+import edu.colostate.cs.exception.DeploymentException;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

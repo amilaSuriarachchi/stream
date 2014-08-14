@@ -1,0 +1,43 @@
+{
+    "clusters" : [
+        {
+            "name" : "count",
+            "nodes" : [
+                {
+                    "ip" : "lattice-0",
+                    "port" : "3000"
+                },
+                {
+                    "ip" : "lattice-1",
+                    "port" : "3000"
+                }
+            ]
+        },
+        {
+            "name" : "relay",
+            "nodes" : [
+                {
+                    "ip" : "lattice-4",
+                    "port" : "3000"
+                },
+                {
+                    "ip" : "lattice-5",
+                    "port" : "3000"
+                }
+            ]
+        },
+        {
+            "name" : "adapter",
+            "nodes" : [
+                {
+                    "ip" : "lattice-8",
+                    "port" : "3000"
+                },
+                {
+                    "ip" : "lattice-9",
+                    "port" : "3000"
+                }
+            ]
+        }
+    ]
+}

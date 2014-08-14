@@ -1,10 +1,10 @@
 package edu.colostate.cs.worker;
 
 import edu.colostate.cs.worker.comm.CommManager;
-import edu.colostate.cs.worker.comm.exception.DeploymentException;
+import edu.colostate.cs.exception.DeploymentException;
 import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.deploy.Deployer;
-import edu.colostate.cs.worker.util.Constants;
+import edu.colostate.cs.util.*;
 
 import java.io.File;
 import java.util.logging.Level;

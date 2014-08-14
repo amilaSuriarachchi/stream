@@ -2,8 +2,8 @@ package edu.colostate.cs.worker.stream;
 
 import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.Node;
-import edu.colostate.cs.worker.comm.exception.DeploymentException;
-import edu.colostate.cs.worker.util.Constants;
+import edu.colostate.cs.exception.DeploymentException;
+import edu.colostate.cs.util.*;
 
 import java.util.List;
 

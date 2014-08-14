@@ -1,4 +1,4 @@
-package edu.colostate.cs.worker.comm.exception;
+package edu.colostate.cs.exception;
 
 /**
  * Created with IntelliJ IDEA.

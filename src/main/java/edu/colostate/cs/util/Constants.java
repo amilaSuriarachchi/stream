@@ -1,4 +1,6 @@
-package edu.colostate.cs.worker.util;
+package edu.colostate.cs.util;
+
+import java.io.File;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +16,9 @@ public interface Constants {
 
     public static final String CONFIG_FILE_NAME = "config.json";
     public static final String DEPLOY_FILE_NAME = "deploy.json";
+
+    public static final String CLUSTER_FILE_NAME = "conf" + File.separator + "cluster.json";
+    public static final String GRAPHS_FOLDER = "graphs";
 
 
 

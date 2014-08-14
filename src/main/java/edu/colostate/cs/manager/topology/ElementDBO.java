@@ -1,4 +1,4 @@
-package edu.colostate.cs.worker.deploy;
+package edu.colostate.cs.manager.topology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,31 +6,37 @@ import java.util.List;
 /**
  * Created with IntelliJ IDEA.
  * User: amila
- * Date: 5/15/14
- * Time: 3:13 PM
+ * Date: 8/13/14
+ * Time: 1:40 PM
  * To change this template use File | Settings | File Templates.
  */
 public class ElementDBO {
 
     private String name;
     private String className;
-    private List<StreamDBO> streams = new ArrayList<StreamDBO>();
+    private String cluster;
+    private int instances;
     private List<ParameterDBO> parameters = new ArrayList<ParameterDBO>();
 
     public ElementDBO() {
     }
 
-    public ElementDBO(String name, String className) {
+    public ElementDBO(String name) {
         this.name = name;
-        this.className = className;
     }
 
-    public void addStream(StreamDBO streamDBO){
-        this.streams.add(streamDBO);
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
     }
 
-    public void addParameter(ParameterDBO parameterDBO){
-        this.parameters.add(parameterDBO);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ElementDBO){
+            ElementDBO newElement = (ElementDBO) obj;
+            return this.name.equals(newElement.name);
+        }
+        return false;
     }
 
     public String getName() {
@@ -49,12 +55,20 @@ public class ElementDBO {
         this.className = className;
     }
 
-    public List<StreamDBO> getStreams() {
-        return streams;
+    public String getCluster() {
+        return cluster;
     }
 
-    public void setStreams(List<StreamDBO> streams) {
-        this.streams = streams;
+    public void setCluster(String cluster) {
+        this.cluster = cluster;
+    }
+
+    public int getInstances() {
+        return instances;
+    }
+
+    public void setInstances(int instances) {
+        this.instances = instances;
     }
 
     public List<ParameterDBO> getParameters() {

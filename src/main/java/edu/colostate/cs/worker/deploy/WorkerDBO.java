@@ -15,6 +15,14 @@ public class WorkerDBO {
     private List<ElementDBO> processors = new ArrayList<ElementDBO>();
     private List<ElementDBO> adapters = new ArrayList<ElementDBO>();
 
+    public void addProcessor(ElementDBO elementDBO){
+        this.processors.add(elementDBO);
+    }
+
+    public void addAdapter(ElementDBO elementDBO){
+        this.adapters.add(elementDBO);
+    }
+
     public List<ElementDBO> getProcessors() {
         return processors;
     }

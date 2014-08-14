@@ -2,7 +2,6 @@ package edu.colostate.cs.worker.comm.client;
 
 import edu.colostate.cs.worker.comm.Node;
 import edu.colostate.cs.worker.config.Configurator;
-import edu.colostate.cs.worker.util.Constants;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

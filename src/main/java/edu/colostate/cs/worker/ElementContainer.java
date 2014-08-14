@@ -5,6 +5,7 @@ import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.data.Event;
 import edu.colostate.cs.worker.stream.Stream;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,17 +17,21 @@ import java.util.List;
  */
 public class ElementContainer implements Container {
 
-    private Stream stream;
+    private List<Stream> streams;
 
-    public ElementContainer(Stream stream) {
-        this.stream = stream;
+    public ElementContainer(List<Stream> streams) {
+        this.streams = streams;
     }
 
     public void emit(Event event) throws MessageProcessingException {
-        this.stream.emit(event);
+        for (Stream stream : this.streams){
+            stream.emit(event);
+        }
     }
 
     public void emit(List<Event> events) throws MessageProcessingException {
-        this.stream.emit(events);
+        for (Stream stream : this.streams){
+            stream.emit(events);
+        }
     }
 }
