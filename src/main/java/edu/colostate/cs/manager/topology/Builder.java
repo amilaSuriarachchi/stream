@@ -81,7 +81,7 @@ public class Builder {
             streamDBO.setType(type);
             streamDBO.setProcessor(processorName);
             for (NodeDBO nodeDBO : deployedNodes){
-                streamDBO.addNode(nodeDBO.getIp(), nodeDBO.getPort());
+                streamDBO.addNode(nodeDBO.getIp(), nodeDBO.getMsgPort());
             }
             elementDBO.addStream(streamDBO);
         }

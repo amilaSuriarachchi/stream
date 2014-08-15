@@ -24,7 +24,7 @@ public class TestBuilder extends TestCase{
         try {
             Map<NodeDBO, WorkerDBO> workerMap = builder.build();
             for (Map.Entry<NodeDBO, WorkerDBO> entry : workerMap.entrySet()){
-                String fileName = "test_home/results/" + entry.getKey().getIp().replace("-","") + entry.getKey().getPort() + ".json";
+                String fileName = "test_home/results/" + entry.getKey().getIp().replace("-","") + entry.getKey().getAdminPort() + ".json";
                 Gson gson = new GsonBuilder().create();
                 String jsonString = gson.toJson(entry.getValue());
                 FileWriter fileWriter = new FileWriter(fileName);

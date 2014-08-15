@@ -10,18 +10,21 @@ package edu.colostate.cs.manager.topology;
 public class NodeDBO {
 
     private String ip;
-    private int port;
+    private int adminPort;
+    private int msgPort;
 
     @Override
     public int hashCode() {
-        return super.hashCode();    //To change body of overridden methods use File | Settings | File Templates.
+        return this.ip.hashCode() + this.adminPort + this.msgPort;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NodeDBO){
             NodeDBO nodeDBO = (NodeDBO) obj;
-            return this.ip.equals(nodeDBO.ip) && this.port == nodeDBO.getPort();
+            return this.ip.equals(nodeDBO.ip)
+                           && (this.adminPort == nodeDBO.getAdminPort())
+                           && (this.msgPort == nodeDBO.msgPort);
         }
         return false;
     }
@@ -34,11 +37,19 @@ public class NodeDBO {
         this.ip = ip;
     }
 
-    public int getPort() {
-        return port;
+    public int getAdminPort() {
+        return adminPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setAdminPort(int adminPort) {
+        this.adminPort = adminPort;
+    }
+
+    public int getMsgPort() {
+        return msgPort;
+    }
+
+    public void setMsgPort(int msgPort) {
+        this.msgPort = msgPort;
     }
 }
