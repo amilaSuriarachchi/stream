@@ -1,7 +1,13 @@
-package edu.colostate.cs.worker.deploy;
+package edu.colostate.cs.admin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.colostate.cs.admin.message.ACKMessage;
+import edu.colostate.cs.admin.message.DeployMessage;
+import edu.colostate.cs.admin.message.Message;
+import edu.colostate.cs.admin.message.StartAdaptersMessage;
+import edu.colostate.cs.exception.DeploymentException;
+import edu.colostate.cs.util.Constants;
 import edu.colostate.cs.worker.ElementContainer;
 import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.api.Adaptor;
@@ -9,12 +15,10 @@ import edu.colostate.cs.worker.api.Element;
 import edu.colostate.cs.worker.api.Processor;
 import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.Node;
-import edu.colostate.cs.exception.DeploymentException;
+import edu.colostate.cs.worker.deploy.*;
 import edu.colostate.cs.worker.stream.Stream;
 import edu.colostate.cs.worker.stream.StreamFactory;
-import edu.colostate.cs.util.*;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,42 +27,54 @@ import java.util.Map;
 /**
  * Created with IntelliJ IDEA.
  * User: amila
- * Date: 5/15/14
- * Time: 2:50 PM
+ * Date: 8/18/14
+ * Time: 9:15 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Deployer {
+public class AdminService implements MessageCallback {
 
     private WorkerContainer workerContainer;
     private CommManager commManager;
-    private String homeFolder;
 
-    public Deployer(WorkerContainer workerContainer, CommManager commManager, String homeFolder) {
+    public AdminService(WorkerContainer workerContainer, CommManager commManager) {
         this.workerContainer = workerContainer;
         this.commManager = commManager;
-        this.homeFolder = homeFolder;
     }
 
-    public void deploy() throws DeploymentException {
-
-        //deploy all the files in the deploy folder
-        File deployFolder = new File(this.homeFolder + File.separator + Constants.DEPLOY_FOLDER);
-        for (File file : deployFolder.listFiles()) {
-            try {
-                deploy(new FileInputStream(file));
-            } catch (FileNotFoundException e) {
-                throw new DeploymentException("Invalid file ", e);
+    public Message messageReceived(Message message) {
+        Message response = null;
+        switch (message.getMessageType()){
+            case Constants.DEPLOY_MESSAGE_TYPE : {
+                response = processDeployMessage((DeployMessage) message);
+                break;
+            }
+            case Constants.START_ADAPTERS_MESSAGE_TYPE: {
+                response = processStartAdapters((StartAdaptersMessage) message);
+                break;
             }
         }
+
+        return response;
+
     }
 
-    public void deploy(InputStream deployFile) throws DeploymentException {
-        Gson gson = new GsonBuilder().create();
-        WorkerDBO elements
-                = gson.fromJson(new InputStreamReader(deployFile), WorkerDBO.class);
-        // iterate through and add elements
-        deploy(elements);
+    private Message processStartAdapters(StartAdaptersMessage startAdaptersMessage){
+        this.workerContainer.startAdapters();
+        return new ACKMessage("Successfully started adapters");
+    }
 
+    private Message processDeployMessage(DeployMessage deployMessage){
+        Gson gson = new GsonBuilder().create();
+        WorkerDBO workerDBO = gson.fromJson(deployMessage.getDeployString(), WorkerDBO.class);
+        Message response = null;
+        try {
+            deploy(workerDBO);
+            response = new ACKMessage("Successfully deployed");
+        } catch (DeploymentException e) {
+            response = new ACKMessage(e.getMessage());
+        }
+
+        return response;
     }
 
     public void deploy(WorkerDBO elements) throws DeploymentException {
@@ -106,4 +122,6 @@ public class Deployer {
             throw new DeploymentException("Class " + elementDBO.getClassName() + " can not access ", e);
         }
     }
+
+
 }

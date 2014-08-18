@@ -20,6 +20,10 @@ public interface Constants {
     public static final String CLUSTER_FILE_NAME = "conf" + File.separator + "cluster.json";
     public static final String GRAPHS_FOLDER = "graphs";
 
+    public static final int DEPLOY_MESSAGE_TYPE = 1;
+    public static final int ACK_MESSAGE_TYPE = 2;
+    public static final int START_ADAPTERS_MESSAGE_TYPE = 3;
+
 
 
 }
