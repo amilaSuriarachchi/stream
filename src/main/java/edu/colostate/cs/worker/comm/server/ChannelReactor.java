@@ -22,12 +22,12 @@ public class ChannelReactor implements Runnable {
 
     private Queue<SocketChannel> connectionQueue;
     private Selector selector;
-    private ServerStreamHandler serverStreamHandler;
+    private ServerConnection serverConnection;
 
-    public ChannelReactor(ServerStreamHandler serverStreamHandler) throws IOException {
+    public ChannelReactor(ServerConnection serverConnection) throws IOException {
         this.connectionQueue = new ConcurrentLinkedQueue<SocketChannel>();
         this.selector = Selector.open();
-        this.serverStreamHandler = serverStreamHandler;
+        this.serverConnection = serverConnection;
     }
 
     public void run() {
@@ -40,10 +40,6 @@ public class ChannelReactor implements Runnable {
                     if (selectionKey.isReadable()) {
                         DataReader dataReader = (DataReader) selectionKey.attachment();
                         dataReader.readReady(selectionKey);
-                        if (dataReader.isStart()){
-                            dataReader.setStart(false);
-                            this.serverStreamHandler.requestReceived(dataReader);
-                        }
                     }
                 }
                 this.selector.selectedKeys().clear();
@@ -60,8 +56,9 @@ public class ChannelReactor implements Runnable {
         while ((socketChannel = this.connectionQueue.poll()) != null) {
             // register this channel with this selector
             socketChannel.configureBlocking(false);
-            DataReader dataReader = new DataReader();
-            socketChannel.register(this.selector, SelectionKey.OP_READ, dataReader);
+            SelectionKey selectionKey = socketChannel.register(this.selector, SelectionKey.OP_READ);
+            this.serverConnection.registerSelectionKey(selectionKey);
+
 
         }
     }

@@ -25,12 +25,12 @@ public class ServerIOReactor implements Runnable {
     Logger logger = Logger.getLogger(ServerIOReactor.class.getName());
 
     private int port;
-    private ServerStreamHandler serverStreamHandler;
+    private ServerConnection serverConnection;
 
 
-    public ServerIOReactor(int port, ServerStreamHandler serverStreamHandler) {
+    public ServerIOReactor(int port, ServerConnection serverConnection) {
         this.port = port;
-        this.serverStreamHandler = serverStreamHandler;
+        this.serverConnection = serverConnection;
     }
 
     public void run() {
@@ -48,7 +48,7 @@ public class ServerIOReactor implements Runnable {
             //create channel reactors according to the number of processors
             int numberOfProcessors = Configurator.getInstance().getIoThreads();
             for (int i = 0; i < numberOfProcessors; i++) {
-                channelReactors.add(new ChannelReactor(this.serverStreamHandler));
+                channelReactors.add(new ChannelReactor(this.serverConnection));
             }
             // start the channel reactors
             for (ChannelReactor channelReactor : channelReactors){

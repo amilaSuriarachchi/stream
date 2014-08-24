@@ -31,8 +31,6 @@ public class DataReader extends InputStream {
     private Condition condition;
     private volatile int mode;
 
-    private volatile boolean start;
-
     private ByteBuffer byteBuffer;
 
     private DataInput dataInput;
@@ -42,7 +40,6 @@ public class DataReader extends InputStream {
         this.lock = new ReentrantLock();
         this.condition = this.lock.newCondition();
         this.mode = BUFFER_WRITE_MODE;
-        this.start = true;
         this.byteBuffer = ByteBuffer.allocate(Configurator.getInstance().getByteBufferSize());
         this.dataInput = new DataInputStream(this);
     }
@@ -106,11 +103,6 @@ public class DataReader extends InputStream {
         }
     }
 
-    @Override
-    public void close() throws IOException {
-        this.start = true;
-    }
-
     private void setWriteMode() {
         if (this.mode == BUFFER_READ_MODE) {
             if (this.byteBuffer.hasRemaining()) {
@@ -128,30 +120,5 @@ public class DataReader extends InputStream {
             this.mode = BUFFER_READ_MODE;
         }
     }
-
-    @Override
-    public int available() throws IOException {
-        this.lock.lock();
-        try {
-           setReadMode();
-           return this.byteBuffer.limit() - this.byteBuffer.position();
-        } finally {
-            this.lock.unlock();
-        }
-
-    }
-
-    public boolean isStart() {
-        return start;
-    }
-
-    public void setStart(boolean start) {
-        this.start = start;
-    }
-
-    public DataInput getDataInput() {
-        return dataInput;
-    }
-
 
 }

@@ -1,5 +1,7 @@
 package edu.colostate.cs.worker.comm.server;
 
+import edu.colostate.cs.worker.config.Configurator;
+
 /**
  * Created with IntelliJ IDEA.
  * User: amila
@@ -18,11 +20,17 @@ public class ServerManager {
         this.messageListener = messageListener;
     }
 
-    public void start(){
+    public void start() {
 
-        ServerStreamHandler serverStreamHandler = new ServerStreamHandler(this.messageListener);
+        ServerConnection serverConnection = new ServerConnection();
+        // start the Server Task pool
+        for (int i = 0; i < Configurator.getInstance().getWorkerPoolSize(); i++) {
+            ServerTask serverTask = new ServerTask(serverConnection, this.messageListener);
+            Thread thread = new Thread(serverTask);
+            thread.start();
+        }
 
-        this.serverIOReactor = new ServerIOReactor(this.port, serverStreamHandler);
+        this.serverIOReactor = new ServerIOReactor(this.port, serverConnection);
         Thread serverThread = new Thread(this.serverIOReactor);
         serverThread.start();
 
