@@ -1,9 +1,12 @@
 package edu.colostate.cs.worker.comm.server;
 
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
+import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.data.Message;
 
 import java.io.DataInput;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +31,21 @@ public class ServerTask implements Runnable {
 
     public void run() {
         DataInput dataInput = null;
-        Message message = new Message();
-        while (true){
+        List<Message> messages = new ArrayList<Message>();
+        for (int i = 0; i < Configurator.getInstance().getTaskBufferMessages(); i++) {
+            messages.add(new Message());
+        }
+//        Message message = new Message();
+        while (true) {
             dataInput = this.serverConnection.getDataInput();
             try {
-                message.parse(dataInput);
+                for (Message message : messages){
+                    message.parse(dataInput);
+                }
                 this.serverConnection.releaseDataInput(dataInput);
-                this.messageListener.onMessage(message);
+                for (Message message : messages){
+                    this.messageListener.onMessage(message);
+                }
             } catch (MessageProcessingException e) {
                 this.logger.log(Level.SEVERE, "Can not parse the message");
             }

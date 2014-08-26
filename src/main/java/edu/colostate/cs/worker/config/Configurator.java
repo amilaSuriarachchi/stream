@@ -55,4 +55,8 @@ public class Configurator {
         return this.configDBO.getByteBufferSize();
     }
 
+    public int getTaskBufferMessages(){
+        return  this.configDBO.getTaskBuffMessages();
+    }
+
 }
