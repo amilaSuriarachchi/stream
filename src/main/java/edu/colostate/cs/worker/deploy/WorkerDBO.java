@@ -14,6 +14,7 @@ public class WorkerDBO {
 
     private List<ElementDBO> processors = new ArrayList<ElementDBO>();
     private List<ElementDBO> adapters = new ArrayList<ElementDBO>();
+    private List<EventTypeDBO> eventTypes = new ArrayList<EventTypeDBO>();
 
     public void addProcessor(ElementDBO elementDBO){
         this.processors.add(elementDBO);
@@ -21,6 +22,10 @@ public class WorkerDBO {
 
     public void addAdapter(ElementDBO elementDBO){
         this.adapters.add(elementDBO);
+    }
+
+    public void addEventType(EventTypeDBO eventTypeDBO){
+        this.eventTypes.add(eventTypeDBO);
     }
 
     public List<ElementDBO> getProcessors() {
@@ -37,5 +42,13 @@ public class WorkerDBO {
 
     public void setAdapters(List<ElementDBO> adapters) {
         this.adapters = adapters;
+    }
+
+    public List<EventTypeDBO> getEventTypes() {
+        return eventTypes;
+    }
+
+    public void setEventTypes(List<EventTypeDBO> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 }

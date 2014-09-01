@@ -1,5 +1,6 @@
 package edu.colostate.cs.worker.comm.server;
 
+import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.data.Message;
@@ -22,11 +23,11 @@ public class ServerTask implements Runnable {
     private Logger logger = Logger.getLogger(ServerTask.class.getName());
 
     private ServerConnection serverConnection;
-    private MessageListener messageListener;
+    private WorkerContainer workerContainer;
 
-    public ServerTask(ServerConnection serverConnection, MessageListener messageListener) {
+    public ServerTask(ServerConnection serverConnection, WorkerContainer workerContainer) {
         this.serverConnection = serverConnection;
-        this.messageListener = messageListener;
+        this.workerContainer = workerContainer;
     }
 
     public void run() {
@@ -35,16 +36,16 @@ public class ServerTask implements Runnable {
         for (int i = 0; i < Configurator.getInstance().getTaskBufferMessages(); i++) {
             messages.add(new Message());
         }
-//        Message message = new Message();
+
         while (true) {
             dataInput = this.serverConnection.getDataInput();
             try {
                 for (Message message : messages){
-                    message.parse(dataInput);
+                    message.parse(dataInput, this.workerContainer.getEventTypClassMap());
                 }
                 this.serverConnection.releaseDataInput(dataInput);
                 for (Message message : messages){
-                    this.messageListener.onMessage(message);
+                    this.workerContainer.onMessage(message);
                 }
             } catch (MessageProcessingException e) {
                 this.logger.log(Level.SEVERE, "Can not parse the message");

@@ -21,8 +21,8 @@ public class TestRelayManager {
         Node targetNode = new Node(Integer.parseInt(args[1]), args[2]);
         RelayMessageListener messageListener = new RelayMessageListener(clientManager, targetNode);
 
-        ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), messageListener);
-        serverManager.start();
+//        ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), messageListener);
+//        serverManager.start();
 
     }
 }

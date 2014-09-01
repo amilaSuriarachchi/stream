@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class StreamDBO {
     /**
-     * target processor to send the message. Always one stream has one target processor
+     * target destProcessor to send the message. Always one stream has one target destProcessor
      */
     private String processor;
     /**

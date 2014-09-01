@@ -21,7 +21,9 @@ import java.util.Map;
 public abstract class AbstractStream implements Stream {
 
     // this is the processing element which needs to send the event to next worker.
-    protected String processor;
+    protected String destProcessor;
+
+    protected String srcProcessor;
 
     // this is the physical worker this stream has to send the message.
     protected List<Node> nodes;
@@ -29,14 +31,18 @@ public abstract class AbstractStream implements Stream {
     // communication manager for this worker. All underline communications should happen through this.
     protected CommManager commManager;
 
-    protected AbstractStream(String processor, List<Node> nodes, CommManager commManager) {
-        this.processor = processor;
+    protected AbstractStream(String destProcessor,
+                             String srcProcessor,
+                             List<Node> nodes,
+                             CommManager commManager) {
+        this.destProcessor = destProcessor;
+        this.srcProcessor = srcProcessor;
         this.nodes = nodes;
         this.commManager = commManager;
     }
 
     public void emit(Event event) throws MessageProcessingException {
-        Message message = new Message(this.processor, event);
+        Message message = new Message(this.destProcessor, this.srcProcessor, event);
         this.commManager.sendEvent(message, getNode(event));
     }
 
@@ -44,14 +50,14 @@ public abstract class AbstractStream implements Stream {
 
         Map<Node, List<Message>> nodeMessageMap = new HashMap<Node, List<Message>>();
         // populate this for all nodes
-        for (Node node : this.nodes){
-            nodeMessageMap.put(node, new ArrayList<Message>());
+        for (int i = 0; i < this.nodes.size(); i++) {
+            nodeMessageMap.put(this.nodes.get(i), new ArrayList<Message>());
         }
         Message message = null;
         Node nodeToSend = null;
 
         for (Event event : events){
-            message = new Message(this.processor, event);
+            message = new Message(this.destProcessor, this.srcProcessor, event);
             nodeToSend = getNode(event);
             nodeMessageMap.get(nodeToSend).add(message);
         }

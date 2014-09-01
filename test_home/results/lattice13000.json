@@ -1,0 +1,1 @@
+{"processors":[{"name":"eventCounter","className":"edu.colostate.cs.count.CountProcessor","streams":[],"parameters":[]}],"adapters":[],"eventTypes":[{"source":"relayProcessor","type":"edu.colostate.cs.count.RelayEvent"},{"source":"eventProducer","type":"edu.colostate.cs.count.ProducerEvent"}]}

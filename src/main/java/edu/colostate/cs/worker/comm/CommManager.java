@@ -1,5 +1,6 @@
 package edu.colostate.cs.worker.comm;
 
+import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.comm.client.ClientManager;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.comm.server.MessageListener;
@@ -20,9 +21,9 @@ public class CommManager {
     private ClientManager clientManager;
     private ServerManager serverManager;
 
-    public CommManager(int port, MessageListener messageListener) {
+    public CommManager(int port, WorkerContainer workerContainer) {
         this.clientManager = new ClientManager();
-        this.serverManager = new ServerManager(port, messageListener);
+        this.serverManager = new ServerManager(port, workerContainer);
     }
 
     public void start() {

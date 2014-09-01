@@ -84,6 +84,7 @@ public class Deployer {
                 }
                 stream = StreamFactory.getStream(streamDBO.getType(),
                         streamDBO.getProcessor(),
+                        elementDBO.getName(),
                         nodes,
                         this.commManager);
                 streams.add(stream);

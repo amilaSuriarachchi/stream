@@ -3,28 +3,22 @@
         {
             "name" : "count",
             "nodes" : [
-                {
-                    "ip" : "localhost",
-                    "port" : "4000"
-                }
+                { "ip" : "lattice-0", "adminPort" : "3000",  "msgPort" : "4000"  },
+                { "ip" : "lattice-1", "adminPort" : "3000",  "msgPort" : "4000"  }
             ]
         },
         {
             "name" : "relay",
             "nodes" : [
-                {
-                    "ip" : "localhost",
-                    "port" : "4001"
-                }
+                { "ip" : "lattice-4",  "adminPort" : "3000",  "msgPort" : "4000"  },
+                { "ip" : "lattice-5",  "adminPort" : "3000",  "msgPort" : "4000"  }
             ]
         },
         {
             "name" : "adapter",
             "nodes" : [
-                {
-                    "ip" : "localhost",
-                    "port" : "4002"
-                }
+                { "ip" : "lattice-8", "adminPort" : "3000", "msgPort" : "4000"  },
+                { "ip" : "lattice-9", "adminPort" : "3000", "msgPort" : "4000"  }
             ]
         }
     ]

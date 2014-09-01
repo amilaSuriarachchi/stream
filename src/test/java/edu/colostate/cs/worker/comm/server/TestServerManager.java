@@ -11,7 +11,7 @@ public class TestServerManager {
 
     public static void main(String[] args) {
 
-        ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), new ServerMessageListener());
-        serverManager.start();
+//        ServerManager serverManager = new ServerManager(Integer.parseInt(args[0]), new ServerMessageListener());
+//        serverManager.start();
     }
 }

@@ -17,34 +17,34 @@ public class TestCommManager {
 
     public static void main(String[] args) {
 
-        int numOfMessages = 1000;
-        CountDownLatch countDownLatch = new CountDownLatch(numOfMessages);
-
-        ServerMessageListener messageListener = new ServerMessageListener(countDownLatch);
-        CommManager commManager = new CommManager(8080, messageListener);
-        commManager.start();
-
-        StringMapEvent event = new StringMapEvent();
-        event.setValue("key1", "Value1");
-        event.setValue("key2", "Value2");
-        event.setValue("key3", "Value3");
-
-        Node targetNode = new Node(8080, "localhost");
-
-        try {
-            for (int i = 0 ; i < numOfMessages;i++){
-                Message message = new Message("PE" + i, event);
-                commManager.sendEvent(message, targetNode);
-            }
-            try {
-                countDownLatch.await();
-                System.out.println("Send all messages ");
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        } catch (MessageProcessingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+//        int numOfMessages = 1000;
+//        CountDownLatch countDownLatch = new CountDownLatch(numOfMessages);
+//
+//        ServerMessageListener messageListener = new ServerMessageListener(countDownLatch);
+//        CommManager commManager = new CommManager(8080, messageListener);
+//        commManager.start();
+//
+//        StringMapEvent event = new StringMapEvent();
+//        event.setValue("key1", "Value1");
+//        event.setValue("key2", "Value2");
+//        event.setValue("key3", "Value3");
+//
+//        Node targetNode = new Node(8080, "localhost");
+//
+//        try {
+//            for (int i = 0 ; i < numOfMessages;i++){
+//                Message message = new Message("PE" + i, "PE", event);
+//                commManager.sendEvent(message, targetNode);
+//            }
+//            try {
+//                countDownLatch.await();
+//                System.out.println("Send all messages ");
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//        } catch (MessageProcessingException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 
     }
 }

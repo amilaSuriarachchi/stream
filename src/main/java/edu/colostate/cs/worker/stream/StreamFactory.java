@@ -22,15 +22,16 @@ public class StreamFactory {
     }
 
     public static Stream getStream(String type,
-                                   String processor,
+                                   String destProcessor,
+                                   String srcProcessor,
                                    List<Node> nodes,
                                    CommManager commManager) throws DeploymentException {
 
         Stream stream = null;
         if (type.equals(Constants.STREAM_TYPE_KEY)) {
-            stream = new KeyStream(processor, nodes, commManager);
+            stream = new KeyStream(destProcessor, srcProcessor, nodes, commManager);
         } else if (type.equals(Constants.STREAM_TYPE_RANDOM)) {
-            stream = new RandomStream(processor, nodes, commManager);
+            stream = new RandomStream(destProcessor, srcProcessor, nodes, commManager);
         } else {
             throw new DeploymentException("Unknown stream type");
         }

@@ -17,8 +17,8 @@ public class RandomStream extends AbstractStream {
 
     private int nextNodeToAssign;
 
-    protected RandomStream(String processor, List<Node> nodes, CommManager commManager) {
-        super(processor, nodes, commManager);
+    protected RandomStream(String destProcessor, String srcProcessor, List<Node> nodes, CommManager commManager) {
+        super(destProcessor, srcProcessor, nodes, commManager);
         this.nextNodeToAssign = 0;
     }
 

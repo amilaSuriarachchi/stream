@@ -77,13 +77,18 @@ public class AdminService implements MessageCallback {
         return response;
     }
 
-    public void deploy(WorkerDBO elements) throws DeploymentException {
-        for (ElementDBO elementDBO : elements.getProcessors()) {
+    public void deploy(WorkerDBO element) throws DeploymentException {
+        for (ElementDBO elementDBO : element.getProcessors()) {
             this.workerContainer.registerProcessor(elementDBO.getName(), (Processor) getElement(elementDBO));
         }
 
-        for (ElementDBO elementDBO : elements.getAdapters()) {
+        for (ElementDBO elementDBO : element.getAdapters()) {
             this.workerContainer.registerAdapter(elementDBO.getName(), (Adaptor) getElement(elementDBO));
+        }
+
+        //deploy event types
+        for (EventTypeDBO eventTypeDBO : element.getEventTypes()){
+            this.workerContainer.addEventType(eventTypeDBO.getSource(), eventTypeDBO.getType());
         }
     }
 
@@ -100,6 +105,7 @@ public class AdminService implements MessageCallback {
                 }
                 stream = StreamFactory.getStream(streamDBO.getType(),
                         streamDBO.getProcessor(),
+                        elementDBO.getName(),
                         nodes,
                         this.commManager);
                 streams.add(stream);

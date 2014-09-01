@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.colostate.cs.exception.DeploymentException;
 import edu.colostate.cs.util.*;
+import edu.colostate.cs.worker.deploy.EventTypeDBO;
 import edu.colostate.cs.worker.deploy.StreamDBO;
 import edu.colostate.cs.worker.deploy.WorkerDBO;
 
@@ -44,28 +45,40 @@ public class Builder {
         Map<ElementDBO, List<NodeDBO>> elementToNodeMap = new HashMap<ElementDBO, List<NodeDBO>>();
         Map<ElementDBO, List<edu.colostate.cs.worker.deploy.ElementDBO>>
                 elementToElementMap = new HashMap<ElementDBO, List<edu.colostate.cs.worker.deploy.ElementDBO>>();
+        List<EventTypeDBO> eventTypes = new ArrayList<EventTypeDBO>();
 
         for (GraphDBO graphDBO : graphs) {
             // add all processors and adapters to available nodes
             for (ProcessorDBO processorDBO : graphDBO.getProcessors()) {
                 addElementDBO(processorDBO, topologyDBO, workerMap, elementToNodeMap, elementToElementMap);
+                if (processorDBO.getEventType() != null){
+                    eventTypes.add(new EventTypeDBO(processorDBO.getName(), processorDBO.getEventType()));
+                }
             }
             for (AdapterDBO adapterDBO : graphDBO.getAdapters()) {
                 addElementDBO(adapterDBO, topologyDBO, workerMap, elementToNodeMap, elementToElementMap);
+                if (adapterDBO.getEventType() != null){
+                    eventTypes.add(new EventTypeDBO(adapterDBO.getName(), adapterDBO.getEventType()));
+                }
             }
         }
 
-        //go through the processor list and set the receivers
+        //go through the destProcessor list and set the receivers
         for (GraphDBO graphDBO : graphs) {
             // add all processors and adapters to available nodes
             for (ProcessorDBO processorDBO : graphDBO.getProcessors()) {
-                 for (ReceiverDBO receiverDBO : processorDBO.getReceivers()){
-                     setReceiverNodes(elementToNodeMap.get(processorDBO),
-                             elementToElementMap.get(new ElementDBO(receiverDBO.getName())),
-                             receiverDBO.getType(),
-                             processorDBO.getName());
-                 }
+                for (ReceiverDBO receiverDBO : processorDBO.getReceivers()) {
+                    setReceiverNodes(elementToNodeMap.get(processorDBO),
+                            elementToElementMap.get(new ElementDBO(receiverDBO.getName())),
+                            receiverDBO.getType(),
+                            processorDBO.getName());
+                }
             }
+        }
+
+        //setting the event types
+        for (Map.Entry<NodeDBO, WorkerDBO> entry : workerMap.entrySet()){
+            entry.getValue().setEventTypes(eventTypes);
         }
 
         return workerMap;
@@ -74,13 +87,13 @@ public class Builder {
     private void setReceiverNodes(List<NodeDBO> deployedNodes,
                                   List<edu.colostate.cs.worker.deploy.ElementDBO> receiverNodes,
                                   String type,
-                                  String processorName){
+                                  String processorName) {
 
-        for (edu.colostate.cs.worker.deploy.ElementDBO elementDBO : receiverNodes){
+        for (edu.colostate.cs.worker.deploy.ElementDBO elementDBO : receiverNodes) {
             StreamDBO streamDBO = new StreamDBO();
             streamDBO.setType(type);
             streamDBO.setProcessor(processorName);
-            for (NodeDBO nodeDBO : deployedNodes){
+            for (NodeDBO nodeDBO : deployedNodes) {
                 streamDBO.addNode(nodeDBO.getIp(), nodeDBO.getMsgPort());
             }
             elementDBO.addStream(streamDBO);
@@ -106,9 +119,9 @@ public class Builder {
             NodeDBO nodeToDeploy = clusterDBO.getNextNode();
             WorkerDBO workerDBO = workerMap.get(nodeToDeploy);
             edu.colostate.cs.worker.deploy.ElementDBO element = getElementDBO(elementDBO);
-            if (elementDBO instanceof ProcessorDBO){
+            if (elementDBO instanceof ProcessorDBO) {
                 workerDBO.addProcessor(element);
-            } else if (elementDBO instanceof  AdapterDBO) {
+            } else if (elementDBO instanceof AdapterDBO) {
                 workerDBO.addAdapter(element);
             }
 

@@ -3,6 +3,7 @@ package edu.colostate.cs.manager.topology;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.colostate.cs.exception.DeploymentException;
+import edu.colostate.cs.worker.data.Message;
 import edu.colostate.cs.worker.deploy.WorkerDBO;
 import junit.framework.TestCase;
 
@@ -37,4 +38,6 @@ public class TestBuilder extends TestCase{
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+
+
 }

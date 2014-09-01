@@ -5,6 +5,7 @@
             "className": "edu.colostate.cs.count.RelayProcessor",
             "cluster" : "relay",
             "instances" : 2,
+            "eventType" : "edu.colostate.cs.count.RelayEvent",
             "receivers" :[
                 {
                     "name" : "eventProducer",
@@ -21,6 +22,10 @@
                 {
                     "name" : "relayProcessor",
                     "type" : "key"
+                },
+                {
+                    "name" : "eventProducer",
+                    "type" : "key"
                 }
             ]
         }
@@ -30,6 +35,7 @@
             "name": "eventProducer",
             "className": "edu.colostate.cs.count.EventProducer",
             "cluster" : "adapter",
+            "eventType" : "edu.colostate.cs.count.ProducerEvent",
             "instances" : 2,
             "parameters" : [
                 { "name" : "threads", "value" : "10"},

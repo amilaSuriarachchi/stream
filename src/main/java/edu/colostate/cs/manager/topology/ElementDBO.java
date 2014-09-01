@@ -15,6 +15,7 @@ public class ElementDBO {
     private String name;
     private String className;
     private String cluster;
+    private String eventType;
     private int instances;
     private List<ParameterDBO> parameters = new ArrayList<ParameterDBO>();
 
@@ -61,6 +62,14 @@ public class ElementDBO {
 
     public void setCluster(String cluster) {
         this.cluster = cluster;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public int getInstances() {

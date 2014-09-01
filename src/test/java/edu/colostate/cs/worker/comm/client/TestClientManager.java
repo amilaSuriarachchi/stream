@@ -26,7 +26,7 @@ public class TestClientManager {
         event.setValue("key5", "Value5");
 
         Node targetNode = new Node(Integer.parseInt(args[0]), args[1]);
-        Message message = new Message("PE1", event);
+        Message message = new Message("PE1", "PE2", event);
 
 //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 //        DataOutput dataOutput = new DataOutputStream(outputStream);

@@ -23,8 +23,8 @@ public class KeyStream extends AbstractStream {
     // simply we use a round robin algorithm to allocate the keys to the nodes.
     private int nextNodeToAssign;
 
-    public KeyStream(String processor, List<Node> nodes, CommManager commManager) {
-        super(processor, nodes, commManager);
+    public KeyStream(String destProcessor, String srcProcessor, List<Node> nodes, CommManager commManager) {
+        super(destProcessor, srcProcessor, nodes, commManager);
         this.keyMap = new HashMap<String, Node>();
         this.nextNodeToAssign = 0;
 

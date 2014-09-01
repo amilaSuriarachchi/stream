@@ -1,5 +1,6 @@
 package edu.colostate.cs.worker.comm.server;
 
+import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.config.Configurator;
 
 /**
@@ -12,12 +13,12 @@ import edu.colostate.cs.worker.config.Configurator;
 public class ServerManager {
 
     private ServerIOReactor serverIOReactor;
-    private MessageListener messageListener;
+    private WorkerContainer workerContainer;
     private int port;
 
-    public ServerManager(int port, MessageListener messageListener) {
+    public ServerManager(int port, WorkerContainer workerContainer) {
         this.port = port;
-        this.messageListener = messageListener;
+        this.workerContainer = workerContainer;
     }
 
     public void start() {
@@ -25,7 +26,7 @@ public class ServerManager {
         ServerConnection serverConnection = new ServerConnection();
         // start the Server Task pool
         for (int i = 0; i < Configurator.getInstance().getWorkerPoolSize(); i++) {
-            ServerTask serverTask = new ServerTask(serverConnection, this.messageListener);
+            ServerTask serverTask = new ServerTask(serverConnection, this.workerContainer);
             Thread thread = new Thread(serverTask);
             thread.start();
         }
