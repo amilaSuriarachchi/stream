@@ -1,1 +1,0 @@
-{"processors":[{"name":"receiver","className":"edu.colostate.cs.ecg.EventReceiver","streams":[{"processor":"receiver","type":"key","nodes":[{"ip":"localhost","port":4000}]}],"parameters":[]}],"adapters":[],"eventTypes":[{"source":"producer","type":"edu.colostate.cs.ecg.ECGEvent"}]}
