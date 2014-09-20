@@ -22,11 +22,6 @@
                         "ip" : "lattice-8",
                         "adminPort" : "3000",
                         "msgPort" : "4000"
-                    },
-                    {
-                        "ip" : "lattice-9",
-                        "adminPort" : "3000",
-                        "msgPort" : "4000"
                     }
                 ]
             },
@@ -35,11 +30,6 @@
                 "nodes" : [
                     {
                         "ip" : "lattice-4",
-                        "adminPort" : "3000",
-                        "msgPort" : "4000"
-                    },
-                    {
-                        "ip" : "lattice-5",
                         "adminPort" : "3000",
                         "msgPort" : "4000"
                     }
