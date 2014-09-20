@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Key stream distribute messages according to the key. It guarantee that
@@ -25,7 +26,7 @@ public class KeyStream extends AbstractStream {
 
     public KeyStream(String destProcessor, String srcProcessor, List<Node> nodes, CommManager commManager) {
         super(destProcessor, srcProcessor, nodes, commManager);
-        this.keyMap = new HashMap<String, Node>();
+        this.keyMap = new ConcurrentHashMap<String, Node>();
         this.nextNodeToAssign = 0;
 
     }
