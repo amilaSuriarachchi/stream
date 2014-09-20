@@ -27,7 +27,7 @@ public class DataWritter extends OutputStream {
     private ByteBuffer byteBuffer;
     private Lock lock;
     private Condition condition;
-    private volatile int mode;
+    private int mode;
 
     public DataWritter() {
         this.lock = new ReentrantLock();

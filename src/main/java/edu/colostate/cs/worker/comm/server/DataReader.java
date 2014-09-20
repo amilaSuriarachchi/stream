@@ -29,19 +29,15 @@ public class DataReader extends InputStream {
 
     private Lock lock;
     private Condition condition;
-    private volatile int mode;
+    private int mode;
 
     private ByteBuffer byteBuffer;
-
-    private DataInput dataInput;
-
 
     public DataReader() {
         this.lock = new ReentrantLock();
         this.condition = this.lock.newCondition();
         this.mode = BUFFER_WRITE_MODE;
         this.byteBuffer = ByteBuffer.allocate(Configurator.getInstance().getByteBufferSize());
-        this.dataInput = new DataInputStream(this);
     }
 
     @Override
