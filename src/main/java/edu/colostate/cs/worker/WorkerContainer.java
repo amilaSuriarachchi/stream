@@ -8,6 +8,7 @@ import edu.colostate.cs.worker.data.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,9 +24,9 @@ public class WorkerContainer implements MessageListener {
     private Map<String, Class> eventTypClassMap;
 
     public WorkerContainer() {
-        this.processors = new HashMap<String, Processor>();
-        this.adaptors = new HashMap<String, Adaptor>();
-        this.eventTypClassMap = new HashMap<String, Class>();
+        this.processors = new ConcurrentHashMap<String, Processor>();
+        this.adaptors = new ConcurrentHashMap<String, Adaptor>();
+        this.eventTypClassMap = new ConcurrentHashMap<String, Class>();
     }
 
     public void onMessage(Message message) {
