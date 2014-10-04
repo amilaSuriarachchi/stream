@@ -1,0 +1,25 @@
+public interface Event {
+
+    public String getKey();
+    public void serialize(DataOutput dataOutput);
+    public void parse(DataInput dataInput);
+
+}
+
+public interface Element {
+
+    public void initialise(Container container, 
+                     Map<String,String> parameters);
+
+}
+
+public interface Adaptor extends Element {
+
+    public void start();
+}
+
+public interface Processor extends Element {
+
+    public void onEvent(Event event);
+
+}
