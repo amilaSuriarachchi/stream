@@ -1,0 +1,59 @@
+reset
+set title "Throughput"
+set xlabel "Number of processors"
+set ylabel "Throughput / 100000"
+set term png
+set output "throughput.png"
+plot  "throughput.data" using 1:2 title 'stream' with linespoints , "throughput.data" using 1:3 title 's4' with linespoints , "throughput.data" using 1:4 title 'storm' with linespoints 
+
+set title "Network bandwidth usage"
+set xlabel "Number of processors"
+set ylabel "Bandwidth (%)"
+set term png
+set output "network.png"
+plot  "network.data" using 1:2 title 'stream-adapter' with linespoints, "network.data" using 1:3 title 'stream-processor' with linespoints, "network.data" using 1:4 title 's4-adapter' with linespoints, "network.data" using 1:5 title 's4-PE' with linespoints, "network.data" using 1:6 title 'storm-spout' with linespoints, "network.data" using 1:7 title 'storm-bolt' with linespoints
+set title "Load average"
+set xlabel "Number of processors"
+set ylabel "Load average"
+set term png
+set output "loadaverage.png"
+plot  "loadaverage.data" using 1:2 title 'stream-adapter' with linespoints, "loadaverage.data" using 1:3 title 'stream-processor' with linespoints, "loadaverage.data" using 1:4 title 's4-adapter' with linespoints, "loadaverage.data" using 1:5 title 's4-PE' with linespoints, "loadaverage.data" using 1:6 title 'storm-spout' with linespoints, "loadaverage.data" using 1:7 title 'storm-bolt' with linespoints
+
+set title "Throughput"
+set xlabel "Number of receiving Units"
+set ylabel "Throughput / 100000"
+set term png
+set output "throughputs.png"
+plot  "scalability.data" using 1:2 notitle with lines
+
+set title "Network bandwidth usage (%)"
+set xlabel "Number of receiving Units"
+set ylabel "Bandwidth (%)"
+set term png
+set output "networkps.png"
+plot  "scalability.data" using 1:3 notitle  with lines
+
+set title "Network bandwidth usage"
+set xlabel "Number of receiving Units"
+set ylabel "Bandwidth mbps"
+set term png
+set output "networks.png"
+plot  "scalability.data" using 1:4 notitle with lines
+
+set title "CPU Load Average"
+set xlabel "Number of receiving Units"
+set ylabel "Load Average"
+set term png
+set output "loadaverages.png"
+plot  "scalability.data" using 1:5 notitle with lines
+
+
+set title "Message Efficiency"
+set xlabel "system"
+set ylabel "bytes per message"
+set term png
+set output "efficiency.png"
+set boxwidth 0.5
+set yrange [0:160]
+set style fill solid
+plot "efficiency.data" using 1:3:xtic(2) with boxes notitle 
