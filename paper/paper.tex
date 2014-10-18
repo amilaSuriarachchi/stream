@@ -442,6 +442,7 @@ component; formatting; style; styling;
 \input{system_overview}
 \input{system_architecture}
 \input{experiments}
+\input{relatedwork}
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -525,20 +526,13 @@ component; formatting; style; styling;
 % footnotes above bottom floats. This can be corrected via the \fnbelowfloat
 % command of the stfloats package.
 
-
+\section{Future Work}
+Expected future work
 
 \section{Conclusion}
 The conclusion goes here. this is more of the conclusion
 
 % conference papers do not normally have an appendix
-
-
-% use section* for acknowledgement
-\section*{Acknowledgment}
-
-
-The authors would like to thank...
-more thanks here
 
 
 % trigger a \newpage just before the given reference
@@ -563,14 +557,15 @@ more thanks here
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
 % (used to reserve space for the reference number labels box)
-\begin{thebibliography}{1}
+%\begin{thebibliography}{1}
 
-\bibitem{IEEEhowto:kopka}
-H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
+%\bibitem{IEEEhowto:kopka}
+%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
+%  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
 
-\end{thebibliography}
-
+%\end{thebibliography}
+\bibliography{paper}
+\bibliographystyle{ieeetr}
 
 
 
