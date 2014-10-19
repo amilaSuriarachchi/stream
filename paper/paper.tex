@@ -412,18 +412,18 @@ shrideep@cs.colostate.edu}
 
 
 \begin{abstract}
-Map reduce is widely used to process off line data with the popularity of Apache Hadoop. However the latencies introduced by the map reduce frameworks are not suitable for unbounded continuous data stream processing. Firstly communication through the file system introduces higher delays compared to direct tcp stream communication and secondly synchronization delay between map reduce jobs add unnecessary delays for high volume stream data processing. In order to handle these issues  distributed stream processing systems such as Yahoo S4 and Twitter storm has been developed.
+Map reduce \cite{dean2008mapreduce} is widely used to process off line data with the popularity of Apache Hadoop \cite{hadoop}. However the latencies introduced by the map reduce frameworks are not suitable for unbounded continuous data stream processing. Firstly communication through the file system introduces higher delays compared to direct tcp stream communication and secondly synchronization delay between map reduce jobs add unnecessary delays for high volume stream data processing. In order to handle these issues distributed stream processing systems such as Yahoo S4\cite{neumeyer2010s4} and Twitter storm\cite{twitterStorm} has been developed.
 
 
-Although high performance is one of the main focus of those systems, there is less attention has been paid for making high performance design for inter node communication. Most of these frameworks do not explore the parallelism making more parallel connections among nodes. Further some systems don't use efficient message serialization techniques which saves the network bandwidth. In this paper we introduce a high performance inter node communication design which explore the parallelism and serialize and parse messages efficiently to optimize the throughput.
+Although high performance is one of the main focus of those systems, there is less attention has been paid for inter node communication performance. Most of these frameworks do not explore the parallelism by making more parallel connections among nodes. Further some systems do not use efficient message serialization techniques which saves the network bandwidth. In this paper we introduce a high performance inter node communication design which explore the parallelism and serialize and parse messages efficiently to optimize the throughput.
 
 
-First we compare performance between our system, Twitter storm and  Yahoo S4 using an implementation of Pan Tompkins algorithm which is used to detect QRS complexities of an ECG signal using a 2 node graph. Our results show our solution performs 4 times better than Twitter storm and 8 times better than Yahoo S4!. Then we use 4 level node graph which is used to process smart plug data to test the scalability of our system in a complex graph. Again our results shows our system linearly scales.
+First we compare performance of our solution with Twitter storm\cite{twitterStorm} and  Yahoo S4\cite{neumeyer2010s4} using an implementation of Pan Tompkins algorithm\cite{kohler2002principles} which is used to detect QRS complexities of an ECG signal using a 2 node graph. Our results show our solution performs 4x times better than other systems. Then we use 4 level node graph which is used to process smart plug data to test the scalability of our system in a complex graph. Again our results shows our system linearly scales.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-component; formatting; style; styling;
+Distributed stream processing; Performance;
 
 \end{IEEEkeywords}
 
