@@ -1,7 +1,7 @@
 \section{System Overview}
-Our system mainly consists of a set of processes which receive events, process them and forward to next processes. We use the term adapters for special processes which receive events from out side systems. These processes and adapters forms a graph which represents the way a given event stream being processed within the system. Rest of this section further describes this concept at a user level. In the next section we provide a detail explanation about how we have make this interprocess communication efficient.
+Our system mainly consists of a set of processes which receive events, process them and forward to next processes. We use the term adapters for special processes which receive events from out side systems. These processes and adapters forms a graph which represents the way a given event stream being processed within the system. Rest of this section further describes this concept at a user level. Our current implementation does not support fault tolarance and have adapted topoloy concept from twitter storm\cite{twitterStorm} and cluster concept from Yahoo S4\cite{neumeyer2010s4}. In the next section we provide a detail explanation about how we have make this interprocess communication efficient.
 \subsection{Process Graph}
-A Process graph (Figure \ref{processgraph}) mainly consists of the adapters, processes which does the processing logic and their interaction patterns. Adapters receive events from out side systems and forward them to other processes. Processes process events according to a given logic and emits the generated events either to processes or out side systems. 
+A Process graph (Figure \ref{processgraph}) mainly consists of the adapters, processes which does the processing logic and their interaction patterns. Adapters receive events from out side systems and forward them to other processes. Processes process events according to a given logic and emits the generated events either to other processes or out side systems. 
 
 \begin{figure}[!t]
 	\centering
@@ -66,7 +66,7 @@ public interface Processor extends Element {
 }
 \end{lstlisting}
 
- The Event interface has a method to get the key for a given event. This key is used in sending messages to next processes as described earlier. Parse and serialize methods of event interface are used to direcly serialize the object state to underline streams. Process interface has a method called onEvent which underline framework invokes when it receives an event to that process. The start method of the adapter interace is invoked by the framework and that can be used to pull events from out side systems onces the system starts. At the initilization time both processes and adapters receive the container object which can be used to send events to other processes. Users can specify the runtime graph to the system using a json file as shown below. 
+ The Event interface has a method to get the key for a given event. This key is used in sending messages to next processes as described earlier. Parse and serialize methods of event interface are used to direcly serialize the object state to underline streams. Process interface has a method called onEvent which underline framework invokes when it receives an event to that process. The start method of the adapter interface is invoked by the framework and that can be used to pull events from out side systems onces the system starts. At the initilization time both processes and adapters receive the container object which can be used to send events to other processes. Users can specify the runtime graph to the system using a json file as shown below. 
 
 \lstinputlisting{runtimegraph.json}
 
