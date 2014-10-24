@@ -4,7 +4,7 @@ We conducted several performance tests to measure the throughput and scalability
 
 
 \subsection{Inter node communication}
-We used a graph as shown in Figure \ref{ecgGraph} to process ECG signal data. For our solution and Yahoo S4! EventProducer reads a file contains over 7500000 ecg records and push events with multiple threads. Twitter Storm does not allow user threads to push data. So we use the Spout thread to send messages into the system. EventReceiver  receives the ECG events, process them and calculate heart rate interval periodically.  
+We used a graph as shown in Figure \ref{ecgGraph} to process ECG signal data. For our solution and Yahoo S4\cite{neumeyer2010s4} EventProducer reads a file contains over 7500000 ecg records and push events with multiple threads. Twitter Storm\cite{twitterStorm} does not allow user threads to push data. So we used the Spout thread to send messages into the system. EventReceiver  receives the ECG events, process them and calculate heart rate interval periodically.  
 We execute our system with 1, 2 and 4  EventReceivers for each system and measured the throughput, load average and network bandwidth  for each case. Throughput was measured at the EventProducer calculating total time required to send messages and the total number of messages send. Load average and network bandwidth were measured using top and atop linux commands respectively. Figure \ref{throuput} shows the throughput variation with the number of nodes for all systems. 
 
 \begin{figure}[!t]
@@ -20,7 +20,7 @@ We execute our system with 1, 2 and 4  EventReceivers for each system and measur
         \label{throuput}
 \end{figure}
 
-As shown in the Figure \ref{throuput} our solution out performs Twitter storm and Yahoo S4!. However by looking the Figure \ref{throuput} one might think even our system does not scalable although it perform high. In order to examine the reason behind this we need to look into the network bandwidth and CPU load average values. 
+As shown in the Figure \ref{throuput} our solution out performs Twitter storm\cite{twitterStorm} and Yahoo S4\cite{neumeyer2010s4}. However by looking the Figure \ref{throuput} one might think even our system does not scalable although it perform high. In order to examine the reason behind this we need to look into the network bandwidth and CPU load average values. 
  
 Figure \ref{networkandload} shows the network bandwidth usage and the CPU load average at each node. For multiple node scenarios we observed the same values for bandwidth usage and CPU load average at each receiver. Therefore we have taken the average values of them. 
 
@@ -47,7 +47,7 @@ After measuring the throughput we examined the  total amount of extra bytes each
         \label{efficiency}
 \end{figure}
 
-As shown in the figure \ref{efficiency} Twitter storm uses a minimum over head while Yahoo S4! performs badly compared to other two. This overhead is due to its usage of  java serializations to serialize data. Then we analyzed to which our solution spends extra 32 bytes. Our solution adds a sequence number (an integer), receiving process id (a 8 byte string for this scenario), sending process id (a 8 byte string for this scenario) to order messages, dispatch the message to correct process and to parse the message at the server. Altogether it adds 26 (serialization format of a string uses two more bytes to keep the string length) extra bytes to each message at application level and other 4 bytes due to tcp over head. This is the trade off we had to pay for improve the parallelism compared to direct one tcp communication per process. 
+As shown in the figure \ref{efficiency} Twitter storm\cite{twitterStorm} uses a minimum over head while Yahoo S4\cite{neumeyer2010s4} performs badly compared to other two. This overhead is due to its usage of  java serializations to serialize data. Then we analyzed to which our solution spends extra 32 bytes. Our solution adds a sequence number (an integer), receiving process id (a 8 byte string for this scenario), sending process id (a 8 byte string for this scenario) to order messages, dispatch the message to correct process and to parse the message at the server. Altogether it adds 26 (serialization format of a string uses two more bytes to keep the string length) extra bytes to each message at application level and other 4 bytes due to tcp over head. This is the trade off we had to pay for improve the parallelism compared to direct one tcp communication per process. 
 
 \subsection{Scalability}
 We performed a scalability test for our system using the 3 level graph shown in Figure \ref{multigraph}. The processing data as well as the processing logic were obtained from the Grand Challenge problem of 8th ACM International conference on Distributed Event Based systems. We used the publicly available 500MB of data to generate the events. 
@@ -59,7 +59,7 @@ We performed a scalability test for our system using the 3 level graph shown in 
         \label{multigraph}
 \end{figure}
 
-This application predicts load averages using the previous values and a given machine learning algorithm. We implement this logic using nodes as shown in the Figure \ref{multigraph}. First producer reads the data file and send events to the avgCal node which calculate the last minite average and send the same event to both plugPredict and housePredict processors. Both plugPredict and housePredict processors predict the next values and send events to receivers. The original problem only requires to send those prediction events in 30s intervals. But we send a prediction event fore each messages to observe how the system works with high load.
+This application predicts load averages using the previous values and a given machine learning algorithm. We implement this logic using nodes as shown in the Figure \ref{multigraph}. First producer reads the data file and send events to the avgCal node which calculate the last minite average and send the same event to both plugPredict and housePredict processors. Both plugPredict and housePredict processors predict the next values and send events to receivers. The original problem only requires to send those prediction events in 30s intervals. But we send a prediction event for each messages to observe how the system works with high load.
  
 As in the earlier case we conduct our experiments using one producer and multiplying the other processing nodes by 1, 2 and 4 times to measure the throughput increase at the producer. We ran each node in a separate machine so that our receiver configurations used 5, 10, 15 machines respectively. We measured the throughput,  network bandwidth and the CPU load average at the producer to examine the scalability of the system. Since the one receiver unit throughput greater than that of the storm one node scenario we only used our system for this experiment.  Results are shown in the Figure \ref{scalability}.
 
