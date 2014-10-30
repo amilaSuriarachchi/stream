@@ -50,7 +50,7 @@ After measuring the throughput we examined the  total amount of extra bytes each
 As shown in the figure \ref{efficiency} Twitter storm\cite{twitterStorm} uses a minimum over head while Yahoo S4\cite{neumeyer2010s4} performs badly compared to other two. This overhead is due to its usage of  java serializations to serialize data. Then we analyzed to which our solution spends extra 32 bytes. Our solution adds a sequence number (an integer), receiving process id (a 8 byte string for this scenario), sending process id (a 8 byte string for this scenario) to order messages, dispatch the message to correct process and to parse the message at the server. Altogether it adds 26 (serialization format of a string uses two more bytes to keep the string length) extra bytes to each message at application level and other 4 bytes due to tcp over head. This is the trade off we had to pay for improve the parallelism compared to direct one tcp communication per process. 
 
 \subsection{Scalability}
-We performed a scalability test for our system using the 3 level graph shown in Figure \ref{multigraph}. The processing data as well as the processing logic were obtained from the Grand Challenge problem of 8th ACM International conference on Distributed Event Based systems. We used the publicly available 500MB of data to generate the events. 
+We performed a scalability test for our system using the 3 level graph shown in Figure \ref{multigraph}. The processing data as well as the processing logic were obtained from the grand challenge problem of 8th ACM international conference on distributed event based systems. We used the publicly available 500MB of data to generate the events. 
 
 \begin{figure}[!t]
         \centering
