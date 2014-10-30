@@ -21,7 +21,7 @@ When the system is deployed, there can be many instances of one process to handl
 \end{figure}
 
 \subsection{API}
-In this section, we explain our API which can be used to define custom events, processes and adapters. We provide clear interfaces to abstract out all the communication complexities from application developers.
+In this section, we explain our API which can be used to define custom events, processes and adapters. We provide clear interfaces to abstract out all the communication complexities from application developers. Table \ref{api} shows details of client interfaces.
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -43,26 +43,31 @@ In this section, we explain our API which can be used to define custom events, p
   tabsize=2
 }
 
-\begin{lstlisting}
-public interface Event {
-    String getKey();
-    void serialize(DataOutput dataOutput);
-    void parse(DataInput dataInput);
-}
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{| l | l | l |}
+        \hline
+        Interface Name &  Method & Parameters \\
+        \hline
+        Event   & getKey &  \\
+        \cline{2-3}
+        & serialize &  DataOutput \\
+	\cline{2-3}        
+        & parse &  DataInput \\
+        \hline
+        Adaptor   & start &  \\
+        \cline{2-3}
+        & initialise &  Container \\
+        \hline
+        Processor   & onEvent & Event \\
+        \cline{2-3}
+        & initialise &  Container \\
+        \hline
+        \end{tabular}
+        \caption{Client API}
+        \label{api}
+\end{table}
 
-public interface Element {
-    void initialise(Container container,
-            Map<String,String> parameters);
-}
-
-public interface Adaptor extends Element {
-    void start();
-}
-
-public interface Processor extends Element {
-    void onEvent(Event event);
-}
-\end{lstlisting}
 
  The Event interface has a method to get the key for a given event. This key is used in sending messages to next processes as described earlier. Parse and serialize methods of event interface are used to direcly serialize the event attributes to underline streams. When implementing these methods deveopers can define attibute serializing order in serialize method and use same order at the parse method to avoid meta data passing with the binary format. Process interface has a method called onEvent which underline framework invokes when it receives an event to that process. The start method of the adapter interface is invoked by the framework and that can be used to pull events from out side systems onces the system starts. At the initilization time both processes and adapters receive the container which can be used to send events to other processes.
  
