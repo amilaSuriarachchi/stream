@@ -15,8 +15,12 @@ import java.util.Map;
  * Time: 1:47 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Event implements Writable {
+public interface Event {
 
-    public abstract String getKey();
+    public String getKey();
+
+    public void serialize(DataOutput dataOutput) throws MessageProcessingException;
+
+    public void parse(DataInput dataInput) throws MessageProcessingException;
 
 }
