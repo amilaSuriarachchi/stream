@@ -24,33 +24,33 @@ set xlabel "Number of receiving Units"
 set ylabel "Throughput / 100000"
 set term png
 set output "throughputs.png"
-plot  "scalability.data" using 1:2 notitle lw 2 lc rgb "grey" with lines
+plot  "scalability.data" using 1:2 notitle lw 2 lc rgb "black" with lines
 
 set title "Network bandwidth usage (%)"
 set xlabel "Number of receiving Units"
 set ylabel "Bandwidth (%)"
 set term png
 set output "networkps.png"
-plot  "scalability.data" using 1:3 notitle lw 2 lc rgb "grey" with lines
+plot  "scalability.data" using 1:3 notitle lw 2 lc rgb "black" with lines
 
 set title "Network bandwidth usage"
 set xlabel "Number of receiving Units"
 set ylabel "Bandwidth mbps"
 set term png
 set output "networks.png"
-plot  "scalability.data" using 1:4 notitle lw 2 lc rgb "grey" with lines
+plot  "scalability.data" using 1:4 notitle lw 2 lc rgb "black" with lines
 
 set title "CPU Load Average"
 set xlabel "Number of receiving Units"
 set ylabel "Load Average"
 set term png
 set output "loadaverages.png"
-plot  "scalability.data" using 1:5 notitle lw 2 lc rgb "grey" with lines
+plot  "scalability.data" using 1:5 notitle lw 2 lc rgb "black" with lines
 
 
 set title "Message Efficiency"
-set xlabel "system"
-set ylabel "bytes per message"
+set xlabel "System"
+set ylabel "Bytes per message"
 set term png
 set output "efficiency.png"
 set boxwidth 0.5
