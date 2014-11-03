@@ -1,7 +1,7 @@
 \section{System Overview}
-Our system mainly consists of a set of processes which receive events, process them and forward to next processes. We use the term adapters for special processes which receive events from outside systems. These processes and adapters form a graph which represents the way a given event stream is processed within the system. Our current implementation does not support fault tolerance and has adapted topology concept from twitter storm\cite{twitterStorm} and cluster concept from Yahoo S4\cite{neumeyer2010s4}. Rest of this section further describes this concept at a user level. In the next section we provide a detailed explanation about how we have made this inter-process communication efficient. 
+Our system mainly consists of a set of processes where each process receives events, processes them and forwards to next processes. We use the term adapters for special processes which receive events from outside systems. These processes and adapters form a graph which represents the way a given event stream is processed within the system. Our current implementation does not support fault tolerance and has adapted topology concept from twitter storm\cite{twitterStorm} and cluster concept from Yahoo S4\cite{neumeyer2010s4}. Rest of this section further describes this concept at a user level. In the next section we provide a detailed explanation about how we have made this inter-process communication efficient. 
 \subsection{Process Graph}
-A Process graph (Figure \ref{processgraph}) mainly consists of the adapters, processes which does the processing logic and their interaction patterns. Adapters receive events from out side systems and forward them to other processes. Processes process events according to a given logic and emits the generated events either to other processes or to outside systems. 
+A Process graph (Figure \ref{processgraph}) mainly consists of the adapters, processes which execute the processing logic and their interaction patterns. Adapters receive events from outside systems and forward them to other processes. Processes process events according to a given logic and emit the generated events either to other processes or to outside systems. 
 
 \begin{figure}[!t]
 	\centering
@@ -55,7 +55,7 @@ In this section, we explain our API which can be used to define custom events, p
 	\cline{2-3}        
         & parse &  DataInput \\
         \hline
-        Adaptor   & start &  \\
+        Adapter   & start &  \\
         \cline{2-3}
         & initialize &  Container \\
         \hline
@@ -69,7 +69,7 @@ In this section, we explain our API which can be used to define custom events, p
 \end{table}
 
 
- The Event interface has a method to get the key for a given event. This key is used in sending messages to next processes as described earlier. Parse and serialize methods of event interface are used to directly serialize the event attributes to underline streams. When implementing these methods developers can define attribute serialization order in serialize method and use same order at the parse method to avoid meta data passing with the binary format. Process interface has a method called onEvent which underline framework invokes when it receives an event to that process. The start method of the adapter interface is invoked by the framework and that can be used to pull events from outside systems once the system starts. At the initialization time both processes and adapters receive the container which can be used to send events to other processes.
+ The Event interface has a method to get the key for a given event. This key is used in sending messages to next processes as described earlier. Parse and serialize methods of event interface are used to directly serialize the event attributes to underlying streams. When implementing these methods developers can define attribute serialization order in serialize method and use the same order at the parse method to avoid metadata passing with the binary format. Processor interface contains a method called onEvent which is invoked by the underlying framework when it receives an event to that process. The start method of the Adapter interface is invoked by the framework and that can be used to pull events from outside systems once the system starts. At the initialization time both processes and adapters receive the container which can be used to send events to other processes.
  
  \subsection{Deployment}
 
@@ -84,11 +84,11 @@ As shown in Figure \ref{deployment}, a deployment of the system consists of a ma
 
 \subsection{Application Development}
 
-An application specifies the runtime graph to process a particular event stream. Therefore an application mainly consists of a set of processes, adapters and events and their interactions. Processes, adapters and events can be developed by implementing the respective interfaces as shown above. Then the interactions can be specified using a json file. 
+An application specifies the runtime graph to process a particular event stream. Therefore an application mainly consists of a set of processes, adapters and events and their interactions. Processes, adapters and events can be developed by implementing the respective interfaces as shown above. Then the interactions can be specified using a JSON file. 
 
-\lstinputlisting{runtimegraph.json}
+\lstinputlisting[label=sampleruntime,caption=Runtime Graph,language=java]{runtimegraph.json}
 
-As shown above, the \textit{instances} parameter can be used to specify the required number of instances to be deployed. The \textit{receivers} parameter is used specify from which process it expects to receive messages and how the sending process should distribute the events among instances. The \textit{key} type indicates that events with same key must be received for same instance. Finally users can deploy the application to manager which process them and deploys to workers.
+As shown in Listing \ref{sampleruntime}, the \textit{instances} parameter can be used to specify the required number of instances to be deployed. The \textit{receivers} parameter is used to specify from which process it expects to receive messages and how the sending process should distribute the events among instances. The \textit{key} type indicates that the events with the same key must be received by the same instance. Finally users can deploy the application to manager which processes them and deploys to workers.
 
 
 
