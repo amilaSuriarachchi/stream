@@ -24,8 +24,19 @@ public class RandomStream extends AbstractStream {
 
     @Override
     protected synchronized Node getNode(Event event) {
-        Node nextNode = this.nodes.get(this.nextNodeToAssign);
-        this.nextNodeToAssign = (this.nextNodeToAssign + 1) % this.nodes.size();
-        return nextNode;
+        if (this.nodes.size() > 0) {
+            Node nextNode = this.nodes.get(this.nextNodeToAssign);
+            this.nextNodeToAssign = (this.nextNodeToAssign + 1) % this.nodes.size();
+            return nextNode;
+        } else {
+            return null;
+        }
+    }
+
+    public synchronized void nodeFailed(Node node) {
+        this.nodes.remove(node);
+        if (this.nodes.size() > 0) {
+            this.nextNodeToAssign = this.nextNodeToAssign % this.nodes.size();
+        }
     }
 }

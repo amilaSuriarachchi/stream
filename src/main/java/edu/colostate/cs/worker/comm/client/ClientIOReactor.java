@@ -5,6 +5,7 @@ import edu.colostate.cs.worker.config.Configurator;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -28,19 +29,25 @@ public class ClientIOReactor implements Runnable {
 
     private Queue<ClientConnection> pendingClientConnections;
 
+    private Selector selector;
+
     public ClientIOReactor() {
         this.pendingClientConnections = new ConcurrentLinkedQueue<ClientConnection>();
+        try {
+            this.selector = Selector.open();
+        } catch (IOException e) {
+            this.logger.log(Level.SEVERE, "Can not open the selector");
+        }
     }
 
     public void add(ClientConnection clientConnection) {
         this.pendingClientConnections.add(clientConnection);
+        this.selector.wakeup();
     }
-
 
     public void run() {
 
         try {
-            Selector selector = Selector.open();
 
             List<ChannelReactor> channelReactors = new ArrayList<ChannelReactor>();
             //create channel reactors according to the number of processors
@@ -58,34 +65,39 @@ public class ClientIOReactor implements Runnable {
 
             //TODO: think how to stop this looping for ever. If there are no pending tasks and all connections has
             //connected we need to make it wait
-            while (selector.isOpen()) {
+            while (this.selector.isOpen()) {
 
                 ClientConnection clientConnection;
-                while ((clientConnection = this.pendingClientConnections.poll()) != null) {
+                if ((clientConnection = this.pendingClientConnections.poll()) != null) {
                     Node targetNode = clientConnection.getTargetNode();
                     // create connections for that
                     for (int i = 0; i < Configurator.getInstance().getTcpConnections(); i++) {
                         SocketChannel socketChannel = SocketChannel.open();
                         socketChannel.configureBlocking(false);
+                        socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
                         socketChannel.connect(new InetSocketAddress(targetNode.getIpAddress(), targetNode.getPort()));
-                        socketChannel.register(selector, SelectionKey.OP_CONNECT, clientConnection);
-                    }
+                        socketChannel.register(this.selector, SelectionKey.OP_CONNECT, clientConnection);
 
-                    selector.select();
-                    for (SelectionKey selectionKey : selector.selectedKeys()) {
-                        if (selectionKey.isConnectable()) {
-                            SocketChannel channel = (SocketChannel) selectionKey.channel();
-                            if (!channel.finishConnect()) {
-                                continue;
-                            }
-                            //find a chennel to handover this thread in round robin manner
-                            int channelNum = lastChennelSelected % numberOfProcessors;
-                            lastChennelSelected++;
-                            channelReactors.get(channelNum).addNewChannel(selectionKey);
-                        }
                     }
-                    selector.selectedKeys().clear();
                 }
+
+                this.selector.select();
+                for (SelectionKey selectionKey : this.selector.selectedKeys()) {
+                    if (selectionKey.isConnectable()) {
+                        SocketChannel channel = (SocketChannel) selectionKey.channel();
+                        if (!channel.finishConnect()) {
+                            continue;
+                        }
+                        //find a chennel to handover this thread in round robin manner
+                        int channelNum = lastChennelSelected % numberOfProcessors;
+                        lastChennelSelected++;
+                        logger.log(Level.INFO, "Connected to server " + channel.getRemoteAddress());
+                        channel.register(selector, 0, selectionKey.attachment());
+                        channelReactors.get(channelNum).addNewChannel(selectionKey);
+                    }
+                }
+                this.selector.selectedKeys().clear();
+
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Can not open the selector");

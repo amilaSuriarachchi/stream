@@ -5,7 +5,10 @@ import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.data.Message;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,24 +35,39 @@ public class ServerTask implements Runnable {
 
     public void run() {
         DataInput dataInput = null;
-        List<Message> messages = new ArrayList<Message>();
-        for (int i = 0; i < Configurator.getInstance().getTaskBufferMessages(); i++) {
-            messages.add(new Message());
-        }
 
         while (true) {
             dataInput = this.serverConnection.getDataInput();
             try {
-                for (Message message : messages){
-                    message.parse(dataInput, this.workerContainer.getEventTypClassMap());
-                }
+                int messageSize = dataInput.readInt();
+                byte[] message = new byte[messageSize];
+                dataInput.readFully(message);
                 this.serverConnection.releaseDataInput(dataInput);
-                for (Message message : messages){
-                    this.workerContainer.onMessage(message);
-                }
+                // process the messages
+                processMessage(message);
+
             } catch (MessageProcessingException e) {
                 this.logger.log(Level.SEVERE, "Can not parse the message");
+            } catch (IOException e) {
+                this.logger.log(Level.SEVERE, "Can not read the message");
+            } catch (RuntimeException e) {
+                this.logger.log(Level.SEVERE, "Can not read data from connection " + e.getMessage());
             }
+        }
+    }
+
+    private void processMessage(byte[] byteMessage) throws MessageProcessingException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteMessage);
+        DataInput dataInput = new DataInputStream(byteArrayInputStream);
+        try {
+            int numberOfMessages = dataInput.readInt();
+            for (int i = 0; i < numberOfMessages; i++) {
+                Message message = new Message();
+                message.parse(dataInput, this.workerContainer.getEventTypClassMap());
+                this.workerContainer.onMessage(message);
+            }
+        } catch (IOException e) {
+            throw new MessageProcessingException("Problem in parsing the message");
         }
     }
 }

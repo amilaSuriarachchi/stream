@@ -2,6 +2,7 @@ package edu.colostate.cs.worker.comm;
 
 import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.comm.client.ClientManager;
+import edu.colostate.cs.worker.comm.client.FailureCallback;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 import edu.colostate.cs.worker.comm.server.MessageListener;
 import edu.colostate.cs.worker.comm.server.ServerManager;
@@ -42,5 +43,13 @@ public class CommManager {
 
         this.clientManager.sendEvents(messages, targetNode);
 
+    }
+
+    public void addClientConnections(List<Node> targetNodes) {
+        this.clientManager.addClientConnections(targetNodes);
+    }
+
+    public void registerFailureCallback(FailureCallback failureCallback) {
+        this.clientManager.registerFailureCallback(failureCallback);
     }
 }

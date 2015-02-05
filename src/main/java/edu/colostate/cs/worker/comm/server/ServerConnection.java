@@ -4,6 +4,7 @@ import edu.colostate.cs.worker.comm.client.DataWritter;
 
 import java.io.*;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -40,7 +41,7 @@ public class ServerConnection {
     }
 
     public synchronized void registerSelectionKey(SelectionKey selectionKey){
-        DataReader dataReader = new DataReader();
+        DataReader dataReader = new DataReader((SocketChannel)selectionKey.channel());
         DataInput dataInput = new DataInputStream(dataReader);
         //remove the current attachment
         selectionKey.attach(dataReader);

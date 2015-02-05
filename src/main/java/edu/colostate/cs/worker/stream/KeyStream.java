@@ -44,4 +44,24 @@ public class KeyStream extends AbstractStream {
         }
         return this.keyMap.get(event.getKey());
     }
+
+
+    public synchronized void nodeFailed(Node node) {
+        this.nodes.remove(node);
+        if (this.nodes.size() > 0) {
+            this.nextNodeToAssign = this.nextNodeToAssign % this.nodes.size();
+        }
+
+        List<String> keysToRemove = new ArrayList<String>();
+
+        for (Map.Entry<String, Node> entry : this.keyMap.entrySet()){
+            if (entry.getValue().equals(node)){
+                keysToRemove.add(entry.getKey());
+            }
+        }
+
+        for (String key : keysToRemove){
+            this.keyMap.remove(key);
+        }
+    }
 }

@@ -1,13 +1,18 @@
 package edu.colostate.cs.worker.comm.client;
 
 import edu.colostate.cs.worker.comm.Node;
+import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.SelectionKey;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * this class holds the
@@ -16,37 +21,60 @@ public class ClientConnection {
 
     private Node targetNode;
 
-    private Queue<DataOutput> freeDataOutputs;
+    private DataOutput dataOutput;
+
+    private Lock lock;
+    private Condition condition;
+
+    private FailureCallback failureCallback;
+
+    private boolean isClosed;
 
     public ClientConnection(Node targetNode) {
         this.targetNode = targetNode;
-        this.freeDataOutputs = new LinkedList<DataOutput>();
+        this.lock = new ReentrantLock();
+        this.condition = this.lock.newCondition();
+        this.isClosed = false;
     }
 
-    public synchronized DataOutput getDataOutput(){
-        DataOutput returnDataOutput = null;
-        while ((returnDataOutput = this.freeDataOutputs.poll()) == null){
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                //TODO: handle this properly
+    public void setFailureCallback(FailureCallback failureCallback) {
+        this.failureCallback = failureCallback;
+    }
+
+    public void sendMessage(byte[] message) throws MessageProcessingException {
+
+        this.lock.lock();
+        try {
+
+            if (this.isClosed) {
+                throw new MessageProcessingException("Connection is closed ");
             }
+
+            if (this.dataOutput == null) {
+                try {
+                    this.condition.await();
+                } catch (InterruptedException e) {
+                }
+            }
+            this.dataOutput.writeInt(message.length);
+            this.dataOutput.write(message);
+        } catch (IOException e) {
+            throw new MessageProcessingException("Can not send message ");
+        } finally {
+            this.lock.unlock();
         }
-        return returnDataOutput;
+
     }
 
-    public synchronized void releaseDataOutput(DataOutput dataOutput){
-         this.freeDataOutputs.add(dataOutput);
-         this.notifyAll();
-    }
-
-    public synchronized void registerSelectionKey(SelectionKey selectionKey){
-        OutputStream outputStream = new DataWritter();
-        DataOutput dataOutput = new DataOutputStream(outputStream);
+    public void registerSelectionKey(SelectionKey selectionKey) {
+        OutputStream outputStream = new DataWritter(this);
         //remove the current attachment
         selectionKey.attach(outputStream);
-        this.freeDataOutputs.add(dataOutput);
-        this.notifyAll();
+        this.lock.lock();
+        this.dataOutput = new DataOutputStream(outputStream);
+        this.condition.signalAll();
+        this.lock.unlock();
+
     }
 
     public Node getTargetNode() {
@@ -55,5 +83,13 @@ public class ClientConnection {
 
     public void setTargetNode(Node targetNode) {
         this.targetNode = targetNode;
+    }
+
+    public void close() {
+        this.isClosed = true;
+        this.failureCallback.nodeFailed(this.targetNode);
+        this.lock.lock();
+        this.condition.signalAll();
+        this.lock.unlock();
     }
 }

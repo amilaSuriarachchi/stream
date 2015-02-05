@@ -10,9 +10,12 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,14 +36,17 @@ public class DataReader extends InputStream {
 
     private ByteBuffer byteBuffer;
 
-    public DataReader() {
+    Logger logger = Logger.getLogger(DataReader.class.getName());
+    private SocketChannel socketChannel;
+
+    public DataReader(SocketChannel socketChannel) {
         this.lock = new ReentrantLock();
         this.condition = this.lock.newCondition();
         this.mode = BUFFER_WRITE_MODE;
         this.byteBuffer = ByteBuffer.allocate(Configurator.getInstance().getByteBufferSize());
+        this.socketChannel = socketChannel;
     }
 
-    @Override
     public int read() throws IOException {
         this.lock.lock();
         setReadMode();
@@ -56,6 +62,9 @@ public class DataReader extends InputStream {
             setReadMode();
             int value = this.byteBuffer.get() & 0xFF;
             return value;
+        } catch (RuntimeException e){
+            this.close();
+            throw e;
         } finally {
             this.lock.unlock();
         }
@@ -78,6 +87,9 @@ public class DataReader extends InputStream {
             int chunk = Math.min(this.byteBuffer.remaining(), len);
             this.byteBuffer.get(b, off, chunk);
             return chunk;
+        } catch (RuntimeException e){
+            this.close();
+            throw e;
         } finally {
             this.lock.unlock();
         }
@@ -114,6 +126,15 @@ public class DataReader extends InputStream {
         if (this.mode == BUFFER_WRITE_MODE) {
             this.byteBuffer.flip();
             this.mode = BUFFER_READ_MODE;
+        }
+    }
+
+    public void close(){
+        try {
+            this.socketChannel.shutdownInput();
+            super.close();
+        } catch (IOException e) {
+            this.logger.log(Level.SEVERE, " Can not shut down the socket channel");
         }
     }
 
