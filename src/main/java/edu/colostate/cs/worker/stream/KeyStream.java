@@ -35,7 +35,7 @@ public class KeyStream extends AbstractStream {
     protected Node getNode(Event event) {
 
         if (!this.keyMap.containsKey(event.getKey())) {
-            synchronized (this.keyMap) {
+            synchronized (this) {
                 if (!this.keyMap.containsKey(event.getKey())) {
                     this.keyMap.put(event.getKey(), this.nodes.get(this.nextNodeToAssign));
                     this.nextNodeToAssign = (this.nextNodeToAssign + 1) % this.nodes.size();
