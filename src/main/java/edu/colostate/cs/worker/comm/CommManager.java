@@ -33,12 +33,6 @@ public class CommManager {
 
     }
 
-    public void sendEvent(Message message, Node targetNode) throws MessageProcessingException {
-
-        this.clientManager.sendEvent(message, targetNode);
-
-    }
-
     public void sendEvents(List<Message> messages, Node targetNode) throws MessageProcessingException {
 
         this.clientManager.sendEvents(messages, targetNode);

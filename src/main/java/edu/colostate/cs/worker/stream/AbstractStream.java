@@ -4,6 +4,7 @@ import edu.colostate.cs.worker.comm.CommManager;
 import edu.colostate.cs.worker.comm.Node;
 import edu.colostate.cs.worker.comm.client.FailureCallback;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
+import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.data.Event;
 import edu.colostate.cs.worker.data.Message;
 
@@ -36,6 +37,10 @@ public abstract class AbstractStream implements Stream, FailureCallback {
     // communication manager for this worker. All underline communications should happen through this.
     protected CommManager commManager;
 
+    private Map<Node, List<Message>> messagesToSend;
+
+    private int messageBufferSize;
+
     protected AbstractStream(String destProcessor,
                              String srcProcessor,
                              List<Node> nodes,
@@ -46,12 +51,32 @@ public abstract class AbstractStream implements Stream, FailureCallback {
         this.commManager = commManager;
         this.commManager.addClientConnections(nodes);
         this.commManager.registerFailureCallback(this);
+        this.messagesToSend = new HashMap<Node, List<Message>>();
+        this.messageBufferSize =  Configurator.getInstance().getMessageBufferSize();
+        for (Node node : this.nodes) {
+            this.messagesToSend.put(node, new ArrayList<Message>(this.messageBufferSize));
+        }
 
     }
 
     public void emit(Event event) throws MessageProcessingException {
         Message message = new Message(this.destProcessor, this.srcProcessor, event);
-        this.commManager.sendEvent(message, getNode(event));
+        Node nextNode = getNode(event);
+        List<Message> sendMessages = getMessagesToSend(message, nextNode);
+        if (sendMessages != null){
+            this.commManager.sendEvents(sendMessages, nextNode);
+        }
+
+    }
+
+    private synchronized List<Message> getMessagesToSend(Message message, Node node) {
+        List<Message> messagesToSend = null;
+        this.messagesToSend.get(node).add(message);
+        if (this.messagesToSend.get(node).size() == this.messageBufferSize){
+            messagesToSend = this.messagesToSend.get(node);
+            this.messagesToSend.put(node, new ArrayList<Message>(this.messageBufferSize));
+        }
+        return messagesToSend;
     }
 
     public void emit(List<Event> events) throws MessageProcessingException {

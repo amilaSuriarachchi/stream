@@ -24,10 +24,10 @@ public class RelayMessageListener implements MessageListener {
     }
 
     public void onMessage(Message message) {
-        try {
-            this.clientManager.sendEvent(message, targetNode);
-        } catch (MessageProcessingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+//        try {
+//            this.clientManager.sendEvent(message, targetNode);
+//        } catch (MessageProcessingException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
     }
 }

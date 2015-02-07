@@ -13,7 +13,7 @@ public class ConfigDBO {
     private int workerPoolSize;
     private int tcpConnections;
     private int byteBufferSize;
-    private int taskBuffMessages;
+    private int messageBufferSize;
 
     public int getIoThreads() {
         return ioThreads;
@@ -47,11 +47,11 @@ public class ConfigDBO {
         this.byteBufferSize = byteBufferSize;
     }
 
-    public int getTaskBuffMessages() {
-        return taskBuffMessages;
+    public int getMessageBufferSize() {
+        return messageBufferSize;
     }
 
-    public void setTaskBuffMessages(int taskBuffMessages) {
-        this.taskBuffMessages = taskBuffMessages;
+    public void setMessageBufferSize(int messageBufferSize) {
+        this.messageBufferSize = messageBufferSize;
     }
 }

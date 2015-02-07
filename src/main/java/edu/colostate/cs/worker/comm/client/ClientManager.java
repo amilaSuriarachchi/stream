@@ -48,23 +48,6 @@ public class ClientManager implements FailureCallback {
         }
     }
 
-    public void sendEvent(Message message, Node targetNode) throws MessageProcessingException {
-
-        ClientConnection clientConnection = this.nodeToConnectionMap.get(targetNode);
-        if (clientConnection != null) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            DataOutput messageOutput = new DataOutputStream(byteArrayOutputStream);
-            try {
-                messageOutput.writeInt(1);
-                message.serialize(messageOutput);
-                byte[] byteMessage = byteArrayOutputStream.toByteArray();
-                clientConnection.sendMessage(byteMessage);
-            } catch (IOException e) {
-                throw new MessageProcessingException(e.getMessage());
-            }
-        }
-    }
-
     public void sendEvents(List<Message> messages, Node targetNode) throws MessageProcessingException {
 
         ClientConnection clientConnection = this.nodeToConnectionMap.get(targetNode);

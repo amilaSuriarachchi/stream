@@ -16,6 +16,6 @@ public interface Container {
 
      public void emit(Event event) throws MessageProcessingException;
 
-     public void emit(List<Event> events) throws MessageProcessingException;
+//     public void emit(List<Event> events) throws MessageProcessingException;
 
 }

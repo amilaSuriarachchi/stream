@@ -25,11 +25,11 @@ public class MessageSender implements Runnable {
 
     public void run() {
         while (true) {
-            try {
-                this.clientManager.sendEvent(this.message, this.targetNode);
-            } catch (MessageProcessingException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+//            try {
+//                this.clientManager.sendEvent(this.message, this.targetNode);
+//            } catch (MessageProcessingException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
         }
 
     }
