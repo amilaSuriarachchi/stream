@@ -1,20 +1,35 @@
 \section{Performance Benchmarks}
 
-We conducted several performance tests to measure the throughput and scalability of our system. All these tests were performed on a LAN system called Lattice which has a network bandwidth of 1 Gbps. All nodes are Intel(R) Xeon(R) 2.4GHz 4 core duo machines with 16 GB of memory. We used Apache S4 0.6.0 version and Apache storm 0.9.2 version. Sample code used for all tests can be found here\cite{solutionCode}.
+We conducted several performance benchmarks to measure the throughput and scalability of our system. All these tests were performed on a LAN system called Lattice which has a network bandwidth of 1 Gbps. All nodes are Intel(R) Xeon(R) 2.4GHz 4 core duo machines with 16 GB of memory. We used Apache S4 0.6.0 version and Apache storm 0.9.2 version. Sample code used for all tests can be found here \cite{solutionCode}.
 
 
-\subsection{Inter node communication}
-We used a graph as shown in Figure \ref{ecgGraph} to process ECG signal data. Our solution \textit{EventProducer} and Yahoo S4\cite{neumeyer2010s4} \textit{EventProducer} read a file containing over 7500000 ECG records and push events with multiple threads. Twitter Storm\cite{twitterStorm} does not allow user threads to push data. So we used the \textit{spout} thread to send messages into the system. \textit{EventReceiver}  receives the ECG events, processes them and calculates heart rate interval periodically.  
-
-\subsubsection{Throughput}
-We executed our system with 1, 2 and 4  \textit{EventReceivers} for each system and measured the throughput, load average and network bandwidth for each case. Throughput was measured at the \textit{EventProducer} by calculating the total time required to send messages and the total number of messages send. Load average and network bandwidth were measured using top and atop linux commands respectively. Figure \ref{throuput} shows the throughput variation with the number of nodes for all systems. 
+\subsection{Effect of message buffer size and thread pool}
+For this experiment, we used a graph as shown in Figure \ref{ecgGraph} to process ECG signal data. The EventProducer reads a file containing over 7500000
+ ECG records and pushes events with multiple threads. EventReceiver receives the ECG events, processes them and calculates heart rate interval periodically using Pan Tompkins algorithm. 
 
 \begin{figure}[!t]
         \centering
-        \includegraphics[width=3.0in]{ecgGraph.png}
+        \includegraphics[width=2.0in]{ecgGraph.png}
         \caption{ECG Process Graph}
         \label{ecgGraph}
 \end{figure}
+
+
+We measured the throughput between two nodes for different thread pool and message buffer sizes to understand the effect of those parameters to throughput. As shown in figure \ref{throughputvar} throughput increases clearly with the message buffer size and increase with thread pool size for larger message buffer sizes. Therefore we can conclude both make a positive impact on the throughput.
+
+\begin{figure}[!t]
+        \centering
+        \includegraphics[width=3.0in]{throughputvar.png}
+        \caption{Throughput Variation}
+        \label{throughputvar}
+\end{figure}
+
+\subsection{Load balancing}
+
+We used the same graph (Figure \ref{ecgGraph}) used in above experiment with 1,2 and 4 \textit{EventReciver} nodes with one \textit{EventSender} node for this experiment. Since 40 thread pool size and 40 message buffer size gives highest throughput, we used that values with our solution. Further we compared our system with Yahoo S4 and Twitter Storm with the same graph. Twitter Storm places tasks arbitrarily within the available nodes. Therefore we used 1 task for \textit{EventSender} and 1,2 and 4 tasks for \textit{EventReceivers} to place them in different nodes. This makes Twitter Storm execute only one thread to process data in each node. In order to compare this situation, we measured our system performance with 1 thread and 10 message buffer size as well.   
+
+Figure \ref{throuput} shows the throughput of the systems. All systems keep initial throughput when increasing nodes. But our solution out performs all the other systems. Figure \ref{networkusage} shows the network bandwidth at each node (measured using atop linux command). For each framework sending node consumes same amount of network bandwidth since it sends all messages to other nodes. For receiving side each receiving node consumes corresponding portion of the bandwidth according to number of receiving nodes. For an example for 4 node configuration each receiving node consumes only one fourth of the sending node bandwidth. Compared to other systems our solution consumes all the available bandwidth. 
+
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{throughput.png}
@@ -22,60 +37,28 @@ We executed our system with 1, 2 and 4  \textit{EventReceivers} for each system 
         \label{throuput}
 \end{figure}
 
-As shown in the Figure \ref{throuput}, our solution outperforms Twitter Storm \cite{twitterStorm} and Yahoo S4 \cite{neumeyer2010s4}. However by looking at the Figure \ref{throuput}, one might think even our solution is not scalable although it performs well. In order to examine the reason behind this, we looked into the network bandwidth and CPU load average values. 
- 
-Figure \ref{networkandload} shows the network bandwidth usage and the CPU load average at each node. For multiple node scenarios, since we observed the same values for both bandwidth usage and CPU load average at each receiver, we took the average values of them. 
-
-\begin{figure*}[!t]
-	\centering
-	\subfloat[Network Usage]{\includegraphics[width=3.0in]{network.png}}
-	\hfil
-	\subfloat[CPU Load Average]{\includegraphics[width=3.0in]{loadaverage.png}}
-	\caption{Network usage and CPU Load Average of the System}
-	\label{networkandload}
-\end{figure*}
- 
-
-By looking at the graphs, first it can be observed that our solution utilities all available network bandwidth (98\%) even with two receivers. In the one receiver case, high CPU load average at the receiver indicates that it has utilized available CPU power. Adding two receivers has increased the CPU power at receiving side utilizing all available network bandwidth. Therefore, we can not increase the throughput without increasing network bandwidth although more CPU capacity is available at the receiver nodes. Having more receiver nodes, we can observe that network bandwidth and CPU load average is reduced at each receiver, since load is shared among the receivers. However for other two systems, it neither hits the maximum network bandwidth available nor the full CPU power available at any stage. If a system does not make efficient use of the available resources then adding more resources will not scale up the system. As explained in earlier, our solution utilities all available resources by using parallel TCP connections and having efficient message transformations.
-
-\subsubsection{Efficiency of Message Serialization}
-After measuring the throughput, we examined the  total amount of extra bytes each system sends to transfer the information from \textit{EventProducer} to \textit{EventReceiver}. Our ECGEvent has two double fields called time and value (ecg signal value) and a streamID which is a 4 byte string. So we calculated total bytes to send this information as 20 bytes (16 for two doubles and 4 for streamID). Then by using the throughput and the bandwidth usage of the system, we calculated the total number of bytes each system uses at network layer to send this message. Finally we calculated the overhead bytes for each system by reducing 20 information bytes. Figure \ref{efficiency} compares these numbers.
-
 \begin{figure}[!t]
         \centering
-        \includegraphics[width=3.0in]{efficiency.png}
-        \caption{Efficiency of Message Serialization}
-        \label{efficiency}
-\end{figure}
-
-As shown in the figure \ref{efficiency}, Twitter Storm \cite{twitterStorm} uses a minimum over head while Yahoo S4 \cite{neumeyer2010s4} performs worse compared to other two. This overhead is due to its usage of Java serialization. We analyzed our solutions' extra overhead of 32 bytes. Our solution adds a sequence number (an integer), receiving process id (a 8 byte string for this scenario), sending process id (a 8 byte string for this scenario) to order messages, dispatch the message to correct process, and to parse the message at the server. Altogether it adds 26 (serialization format of a string uses two more bytes to keep the string length) extra bytes including 2 overhead bytes for streamID, to each message at application level and another 4 bytes due to TCP overhead. This is the trade off we had to pay to improve the parallelism compared to direct one TCP communication per process. 
-
-\subsubsection{Latency}
-We examined the message latency between the event producer and receiver. For this experiment, we sent the timestamp at the producer along the message and calculated the latency at the receiver. We took 6000 samples over the experiment duration. As shown in the figure \ref{latancydis}, we could observe the mean latency of 185.05ms with the 95\% confidence interval of (182.56ms, 187.54ms). 
-
-\begin{figure}[!t]
-        \centering
-        \includegraphics[width=3.0in]{latencyHistogram.png}
-        \caption{Message Latency Distribution}
-        \label{latancydis}
+        \includegraphics[width=3.0in]{network.png}
+        \caption{Network Usage of the Systems}
+        \label{networkusage}
 \end{figure}
 
 
-\subsection{Scalability}
-We performed a scalability test for our system using the 3-level graph shown in Figure \ref{multigraph}. The data as well as the processing logic were obtained from the Grand Challenge problem at 8th ACM International Conference on Distributed Event Based Systems \cite{acm}. This project explores the possibility of using stream processing to process data generated in the smart grid domain. The data is generated by sensors attached to a device called “smart plug” which is plugged as an intermediate layer between a power outlet and the plug of a home appliance. The sensors capture various measures related to power consumption of each connected device and send these measurements continuously to a central processing system. Each household contains several of such smart plugs which will report the sensor readings once in every second. At the central processing system, these data should be processed in order to forecast the short time load and to generate load statistics for real time demand management. We implemented the first part of this project which predicts the load using a machine learning algorithm. This algorithm divides the events to fixed intervals called  time slices and uses average value of time slices to predict the average of feature time slices. We used the publicly available 500MB of data to generate the events.
+\subsection{Multistage Graph Processing}
+We performed a multistage graph test for our system using the 3-level graph shown in Figure \ref{multigraph}. The data as well as the processing logic were obtained from the Grand Challenge problem at 8th ACM International Conference on Distributed Event Based Systems \cite{acm}. This project explores the possibility of using stream processing to process data generated in the smart grid domain. The data is generated by sensors attached to a device called “smart plug” which is plugged as an intermediate layer between a power outlet and the plug of a home appliance. The sensors capture various measures related to power consumption of each connected device and send these measurements continuously to a central processing system. Each household contains several of such smart plugs which will report the sensor readings once in every second. At the central processing system, these data should be processed in order to forecast the short time load and to generate load statistics for real time demand management. We implemented the first part of this project which predicts the load using a machine learning algorithm. This algorithm divides the events to fixed intervals called  time slices and uses average value of time slices to predict the average of feature time slices. We used the publicly available 500MB of data to generate the events.
 
 \begin{figure}[!t]
         \centering
-        \includegraphics[width=3.0in]{multigraph.png}
+        \includegraphics[width=2.0in]{multigraph.png}
         \caption{Multilevel Node Graph}
         \label{multigraph}
 \end{figure}
 
 As shown in Figure \ref{multigraph}, Producer node reads the data file and emits events to the \textit{avgCal} node which calculates the last time slice average and sends the same event to both \textit{plugPredict} and \textit{housePredict} processors. Both \textit{plugPredict} and \textit{housePredict} processors predict the next values and send events to receivers. The original problem only requires to send those prediction events in 30s intervals. But we used a prediction event for each messages to observe how the system works with high load. 
+
+As in the earlier case, we conducted our experiments using one producer and incrementing the other processing nodes by 1, 2 and 4 times to measure the throughput increase at the producer. We ran each node in a separate machine so that our receiver configurations used 5, 10, 15 machines respectively. All nodes were configured to use both thread pool and message buffer size of 40. We measured the throughput, network bandwidth and the CPU load average at the producer to examine the scalability of the system. Since the one receiver unit throughput is greater than that of the Twitter Storm one node scenario, we only used our system for this experiment. As shown in Figure \ref{scalability} system scales up until it fully utilized the available network bandwidth.
  
-As in the earlier case, we conducted our experiments using one producer and incrementing the other processing nodes by 1, 2 and 4 times to measure the throughput increase at the producer. We ran each node in a separate machine so that our receiver configurations used 5, 10, 15 machines respectively. We measured the throughput,  network bandwidth and the CPU load average at the producer to examine the scalability of the system. Since the one receiver unit throughput is greater than that of the Twitter Storm one node scenario, we only used our system for this experiment.  Results are shown in the Figure \ref{scalability}.
-
-
 \begin{figure*}[!t]
         \centering
         \subfloat[Throughput]{\includegraphics[width=3.0in]{throughputs.png}}
@@ -89,7 +72,32 @@ As in the earlier case, we conducted our experiments using one producer and incr
         \label{scalability}
 \end{figure*}
 
+\subsection{Scalability and Latency}
+We analyze the scalability of our framework using cumulative throughput with a similar experiments found in research literature.  In this experiment a given set of nodes communicate directly with each other using TCP connections.  We used same message type (46 bytes in serialized format) used for earlier experiment. The given cumulative throughput is at the application level message rate omitting the TCP overhead and all communications are through the network. For all experiments we use 20 message buffer. 
 
-For one the receiver unit case, we observed very high load average and network bandwidth usage at \textit{avgCal} node since it sends messages to two nodes. As shown in  Figure \ref{scalability}, we could linearly scale up the system by adding more receiver units to add more cpu power to the system. When increasing the receiver units, we could observe throughput of the system increases proportional to number of receiving units. Our CPU load average of 13 at the producer indicates it has utilized all available CPU power and it is required to add more producers to scale this system further up. 
+\begin{figure}[!t]
+        \centering
+        \includegraphics[width=3.0in]{allthroughput.png}
+        \caption{All to All Throughput}
+        \label{allthroughput}
+\end{figure}
+
+As shown in Figure \ref{allthroughput} system linearly scales with the number of nodes.  Compared to Naiad and Storm we have achieved better performance.  Figure \ref{alllatency} shows the mean message latency for all messages. We measured the message message latency during the same experiment by sending the time stamp along with each message. Compared to Storm we have achieved much lesser latency level. Naiad reports very low latency. However they do not measure the latency of the data messages in the stressed system but measure the latency of control messages.  MillWheel has reported very low latency level compared to our results. Further it is worth note that the latency can be reduced by reducing the buffer size and hence reducing the throughput. We choose 20 message buffer since it gives better throughput as well as comparable low latency.
+
+\begin{figure}[!t]
+        \centering
+        \includegraphics[width=3.0in]{alllatency.png}
+        \caption{All to All Latency}
+        \label{alllatency}
+\end{figure}
 
 
+\subsection{Fault tolerance}
+For this experiment we analyzed the resilience of the system in the presence of node failures. Initially we had a load balanced system where the event producer sends events to 8 receiving nodes. The producer produced messages at the rate of around 2500000 and each receiving node receive messages at a rate around 320000 ($\sim$ 2500000 / 8). Then we shutdown one process by one process within 1 minute interval. This increased the throughput of each receiving node. Figure \ref{rthroughput} shows the throughput received at the last node to shutdown with the time. As depicts in the Figure \ref{rthroughput} when a node fails system automatically removes the node from its configurations and route the messages to other nodes balancing load among existing ones.
+
+\begin{figure}[!t]
+        \centering
+        \includegraphics[width=3.0in]{failure_throughput.png}
+        \caption{Receiver Throughput}
+        \label{rthroughput}
+\end{figure}
