@@ -1,15 +1,17 @@
 reset
-set title "Throughput"
+set notitle 
 set xlabel "Number of processors"
 set ylabel "Throughput / 100000"
+set xtics 1
 set term png
 set output "throughput.png"
-plot  "throughput.data" using 1:2 title 'our sol' lw 4 with linespoints , "throughput.data" using 1:3 title 's4' lw 2 with linespoints , "throughput.data" using 1:4 title 'storm' lw 3 with linespoints 
+plot  "throughput.data" using 1:2 title 'our sol' lw 2 with linespoints, "throughput.data" using 1:3 title 'our sol - 1 thread' lw 2 with linespoints, "throughput.data" using 1:4 title 's4' lw 2 with linespoints , "throughput.data" using 1:5 title 'storm' lw 2 with linespoints 
 
-set title "Network bandwidth usage"
+set notitle 
 set xlabel "Number of processors"
 set ylabel "Bandwidth (%)"
 set term png
+set xtics 1
 set output "network.png"
 plot  "network.data" using 1:2 title 'our sol-adapter' lw 2 with linespoints, "network.data" using 1:3 title 'our sol-processor' lw 3 with linespoints, "network.data" using 1:4 title 's4-adapter' lw 2 with linespoints, "network.data" using 1:5 title 's4-PE' lw 3 with linespoints, "network.data" using 1:6 title 'storm-spout' lw 2 with linespoints, "network.data" using 1:7 title 'storm-bolt' lw 3 with linespoints
 set title "Load average"
@@ -19,28 +21,28 @@ set term png
 set output "loadaverage.png"
 plot  "loadaverage.data" using 1:2 title 'our sol-adapter' lw 2 with linespoints, "loadaverage.data" using 1:3 title 'our sol-processor' lw 3 with linespoints, "loadaverage.data" using 1:4 title 's4-adapter' lw 2 with linespoints, "loadaverage.data" using 1:5 title 's4-PE' lw 3 with linespoints, "loadaverage.data" using 1:6 title 'storm-spout' lw 2 with linespoints, "loadaverage.data" using 1:7 title 'storm-bolt' lw 3 with linespoints
 
-set title "Throughput"
+set notitle 
 set xlabel "Number of receiving Units"
 set ylabel "Throughput / 100000"
 set term png
 set output "throughputs.png"
 plot  "scalability.data" using 1:2 notitle lw 2 lc rgb "black" with lines
 
-set title "Network bandwidth usage (%)"
+set notitle 
 set xlabel "Number of receiving Units"
 set ylabel "Bandwidth (%)"
 set term png
 set output "networkps.png"
 plot  "scalability.data" using 1:3 notitle lw 2 lc rgb "black" with lines
 
-set title "Network bandwidth usage"
+set notitle 
 set xlabel "Number of receiving Units"
-set ylabel "Bandwidth mbps"
+set ylabel "Bandwidth (Mbps)"
 set term png
 set output "networks.png"
 plot  "scalability.data" using 1:4 notitle lw 2 lc rgb "black" with lines
 
-set title "CPU Load Average"
+set notitle 
 set xlabel "Number of receiving Units"
 set ylabel "Load Average"
 set term png
