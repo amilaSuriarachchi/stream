@@ -20,27 +20,27 @@ We measured the throughput between two nodes for different thread pool and messa
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{throughputvar.png}
-        \caption{Throughput Variation}
+        \caption{Throughput variation with the thread pool size and message buffer size.}
         \label{throughputvar}
 \end{figure}
 
 \subsection{Load balancing}
 
-We used the same graph (Figure \ref{ecgGraph}) used in above experiment with 1,2 and 4 \textit{EventReciver} nodes with one \textit{EventSender} node for this experiment. Since 40 thread pool size and 40 message buffer size gives highest throughput, we used that values with our solution. Further we compared our system with Yahoo S4 and Twitter Storm with the same graph. Twitter Storm places tasks arbitrarily within the available nodes. Therefore we used 1 task for \textit{EventSender} and 1,2 and 4 tasks for \textit{EventReceivers} to place them in different nodes. This makes Twitter Storm execute only one thread to process data in each node. In order to compare this situation, we measured our system performance with 1 thread and 10 message buffer size as well.   
+We used the same graph (Figure \ref{ecgGraph}) used in above experiment with 1,2 and 4 \textit{EventReciver} nodes with one \textit{EventSender} node for this experiment. Since 40 thread pool size and 40 message buffer size gives highest throughput, we used that values with our solution. Further we compared our system with Yahoo S4 \cite{neumeyer2010s4} and Twitter Storm \cite{toshniwal2014storm} with the same graph. Twitter Storm \cite{toshniwal2014storm} places tasks arbitrarily within the available nodes. Therefore we used 1 task for \textit{EventSender} and 1,2 and 4 tasks for \textit{EventReceivers} to place them in different nodes. This makes Twitter Storm \cite{toshniwal2014storm} execute only one thread to process data in each node. In order to compare this situation, we measured our system performance with 1 thread and 10 message buffer size as well.   
 
 Figure \ref{throuput} shows the throughput of the systems. All systems keep initial throughput when increasing nodes. But our solution out performs all the other systems. Figure \ref{networkusage} shows the network bandwidth at each node (measured using atop linux command). For each framework sending node consumes same amount of network bandwidth since it sends all messages to other nodes. For receiving side each receiving node consumes corresponding portion of the bandwidth according to number of receiving nodes. For an example for 4 node configuration each receiving node consumes only one fourth of the sending node bandwidth. Compared to other systems our solution consumes all the available bandwidth. 
 
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{throughput.png}
-        \caption{Throughput of the systems}
+        \caption{Throughput comparison of S4, Storm and our solution.}
         \label{throuput}
 \end{figure}
 
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{network.png}
-        \caption{Network Usage of the Systems}
+        \caption{Network usage at each node. For multiple receiving nodes it is the network utilization at a one node.}
         \label{networkusage}
 \end{figure}
 
@@ -57,18 +57,18 @@ We performed a multistage graph test for our system using the 3-level graph show
 
 As shown in Figure \ref{multigraph}, Producer node reads the data file and emits events to the \textit{avgCal} node which calculates the last time slice average and sends the same event to both \textit{plugPredict} and \textit{housePredict} processors. Both \textit{plugPredict} and \textit{housePredict} processors predict the next values and send events to receivers. The original problem only requires to send those prediction events in 30s intervals. But we used a prediction event for each messages to observe how the system works with high load. 
 
-As in the earlier case, we conducted our experiments using one producer and incrementing the other processing nodes by 1, 2 and 4 times to measure the throughput increase at the producer. We ran each node in a separate machine so that our receiver configurations used 5, 10, 15 machines respectively. All nodes were configured to use both thread pool and message buffer size of 40. We measured the throughput, network bandwidth and the CPU load average at the producer to examine the scalability of the system. Since the one receiver unit throughput is greater than that of the Twitter Storm one node scenario, we only used our system for this experiment. As shown in Figure \ref{scalability} system scales up until it fully utilized the available network bandwidth.
+As in the earlier case, we conducted our experiments using one producer and incrementing the other processing nodes by 1, 2 and 4 times to measure the throughput increase at the producer. We ran each node in a separate machine so that our receiver configurations used 5, 10, 15 machines respectively. All nodes were configured to use both thread pool and message buffer size of 40. We measured the throughput, network bandwidth and the CPU load average at the producer to examine the scalability of the system. Since the one receiver unit throughput is greater than that of the Twitter Storm \cite{toshniwal2014storm} one node scenario, we only used our system for this experiment. As shown in Figure \ref{scalability} system scales up until it fully utilized the available network bandwidth.
  
 \begin{figure*}[!t]
         \centering
-        \subfloat[Throughput]{\includegraphics[width=3.0in]{throughputs.png}}
+        \subfloat[Throughput of the System]{\includegraphics[width=3.0in]{throughputs.png}}
         \hfil
-        \subfloat[Network Usage]{\includegraphics[width=3.0in]{networkps.png}}
+        \subfloat[Network Usage (\%) at Sender]{\includegraphics[width=3.0in]{networkps.png}}
         \hfil
-        \subfloat[Network Usage Bandwidth]{\includegraphics[width=3.0in]{networks.png}}
+        \subfloat[Network Usage Bandwidth at Sender]{\includegraphics[width=3.0in]{networks.png}}
         \hfil
-        \subfloat[CPU Load Average]{\includegraphics[width=3.0in]{loadaverages.png}}
-        \caption{Scalability of the System}
+        \subfloat[CPU Load Average at Sender]{\includegraphics[width=3.0in]{loadaverages.png}}
+        \caption{Performance of Multistage Graph processing.}
         \label{scalability}
 \end{figure*}
 
@@ -78,16 +78,16 @@ We analyze the scalability of our framework using cumulative throughput with a s
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{allthroughput.png}
-        \caption{All to All Throughput}
+        \caption{All to All exchange Throughput}
         \label{allthroughput}
 \end{figure}
 
-As shown in Figure \ref{allthroughput} system linearly scales with the number of nodes.  Compared to Naiad and Storm we have achieved better performance.  Figure \ref{alllatency} shows the mean message latency for all messages. We measured the message message latency during the same experiment by sending the time stamp along with each message. Compared to Storm we have achieved much lesser latency level. Naiad reports very low latency. However they do not measure the latency of the data messages in the stressed system but measure the latency of control messages.  MillWheel has reported very low latency level compared to our results. Further it is worth note that the latency can be reduced by reducing the buffer size and hence reducing the throughput. We choose 20 message buffer since it gives better throughput as well as comparable low latency.
+As shown in Figure \ref{allthroughput} system linearly scales with the number of nodes.  Compared to Naiad (Figure 6(a) in cited paper) \cite{murray2013naiad} and Spark Streaming (Figure 4 in cited paper) \cite{zaharia2013discretized} we have achieved better performance.  Figure \ref{alllatency} shows the mean message latency for all messages. We measured the message latency during the same experiment by sending the time stamp along with each message. Compared to Spark Streaming (Figure 4 in cited paper) \cite{zaharia2013discretized} we have achieved much lesser latency level. Naiad (Figure 6(b) in cited paper) \cite{murray2013naiad} reports very low latency for Global barrier messages. However our latency corresponds to message latency for data messages. MillWheel (Section 8.1) \cite{akidau2013millwheel} has reported very low latency level compared to our results. Further it is worth note that the latency can be reduced by reducing the buffer size and hence reducing the throughput. We choose 20 message buffer since it gives better throughput as well as comparable low latency.
 
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{alllatency.png}
-        \caption{All to All Latency}
+        \caption{All to All exchange Latency}
         \label{alllatency}
 \end{figure}
 
@@ -98,6 +98,6 @@ For this experiment we analyzed the resilience of the system in the presence of 
 \begin{figure}[!t]
         \centering
         \includegraphics[width=3.0in]{failure_throughput.png}
-        \caption{Receiver Throughput}
+        \caption{Receiver throughput variation at the last node.}
         \label{rthroughput}
 \end{figure}

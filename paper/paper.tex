@@ -414,18 +414,14 @@ shrideep@cs.colostate.edu}
 
 
 \begin{abstract}
-MapReduce \cite{dean2008mapreduce} is widely used to process offline data with the popularity of Apache Hadoop \cite{hadoop}. However the latencies introduced by the MapReduce frameworks are not suitable for unbounded continuous data stream processing. Firstly communication through the file system introduces higher delays compared to direct TCP stream communication and secondly synchronization delay between \textit{map} and \textit{reduce} jobs adds unnecessary delays for high volume stream data processing. In order to handle these issues distributed stream processing systems have been developed.
+Processing complex computations on streaming data in real time is a demanding feature for many organizational data processing systems. Hence these systems requires low latency and high throughput to process data real time with less number of machines. In order to address these requirements distributed stream processing systems has been developed.  Although high performance is one of the main goals of these systems, there is less attention has been paid for inter node communication performance. In this paper we introduce message level buffering and serialization to increase the inter node communication efficiency.
 
-
-Although high performance is one of the main goals of those systems, there is less attention has been paid for inter node communication performance. Most of these frameworks do not explore the parallelism by making more parallel connections among nodes. Further some systems do not use efficient message serialization techniques which save the network bandwidth. In this paper we introduce a high performance inter node communication design which explore the parallelism and serialize and parse messages efficiently to optimize the throughput.
-
-
-First we compare performance of our solution with Twitter storm \cite{twitterStorm} and  Yahoo S4 \cite{neumeyer2010s4} using an implementation of Pan Tompkins algorithm \cite{kohler2002principles} which is used to detect QRS complexities of an ECG signal using a 2 node graph. Our results show our solution performs 4x times better than other systems. Then we use 4 level node graph which is used to process smart plug data to test the scalability of our system for a complex graph. Again our results show our system scales linearly.
+We compare performance of our solution with Twitter Storm \cite{toshniwal2014storm} and Yahoo S4 \cite{neumeyer2010s4} using an implementation of Pan Tompkins algorithm \cite{kohler2002principles} which is used to detect QRS complexities of an ECG signal using a 2 node graph. Our results show our solution performs 4 times better than other systems. Then we use 4 level node graph which is used to process smart plug data to test the performance of our system for a complex graph. Finally we show our system linearly scalable and resilience to faults.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-Distributed stream processing; Performance;
+Distributed event stream processing; Performance; Complex event processing;
 
 \end{IEEEkeywords}
 
