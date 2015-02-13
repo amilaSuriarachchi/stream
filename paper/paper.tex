@@ -414,7 +414,7 @@ shrideep@cs.colostate.edu}
 
 
 \begin{abstract}
-Processing complex computations on streaming data in real time is a demanding feature for many organizational data processing systems. Hence these systems requires low latency and high throughput to process data real time with less number of machines. In order to address these requirements distributed stream processing systems has been developed.  Although high performance is one of the main goals of these systems, there is less attention has been paid for inter node communication performance. In this paper we introduce message level buffering and serialization to increase the inter node communication efficiency.
+Processing complex computations on high volume streaming data in real time is a demanding feature for many organizational data processing systems. Hence these systems should produce results with low latency while processing billions of messages daily. In order to address these requirements distributed stream processing systems has been developed.  Although high performance is one of the main goals of these systems, there is less attention has been paid for inter node communication performance which is a key aspect of achieving over all system performance. In this paper we introduce message level buffering and serialization to increase the inter node communication efficiency.
 
 We compare performance of our solution with Twitter Storm \cite{toshniwal2014storm} and Yahoo S4 \cite{neumeyer2010s4} using an implementation of Pan Tompkins algorithm \cite{kohler2002principles} which is used to detect QRS complexities of an ECG signal using a 2 node graph. Our results show our solution performs 4 times better than other systems. Then we use 4 level node graph which is used to process smart plug data to test the performance of our system for a complex graph. Finally we show our system linearly scalable and resilience to faults.
 
@@ -523,7 +523,6 @@ Distributed event stream processing; Performance; Complex event processing;
 % exclusively. Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the \fnbelowfloat
 % command of the stfloats package.
-
 \section{Acknowledgement}
 This research is supported by a grant from the US National Science Foundation's Computer
 Systems Research Program (CNS-1253908).
