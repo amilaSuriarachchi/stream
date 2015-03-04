@@ -16,7 +16,7 @@ import java.util.Map;
  * Time: 12:17 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StringMapEvent implements Event {
+public class StringMapEvent extends Event {
 
     private Map<String,String> data;
 

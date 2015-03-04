@@ -7,6 +7,7 @@ import edu.colostate.cs.worker.comm.server.MessageListener;
 import edu.colostate.cs.worker.data.Message;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,16 +23,39 @@ public class WorkerContainer implements MessageListener {
     private Map<String, Processor> processors;
     private Map<String, Adaptor> adaptors;
     private Map<String, Class> eventTypClassMap;
+    private Map<Integer, Long> connectionToSeqMap;
 
     public WorkerContainer() {
         this.processors = new ConcurrentHashMap<String, Processor>();
         this.adaptors = new ConcurrentHashMap<String, Adaptor>();
         this.eventTypClassMap = new ConcurrentHashMap<String, Class>();
+        this.connectionToSeqMap = new HashMap<Integer, Long>();
     }
 
     public void onMessage(Message message) {
         Processor processor = this.processors.get(message.getProcessingElement());
         processor.onEvent(message.getEvent());
+    }
+
+    public synchronized void onMessages(List<Message> messages, int connectionID, long seqNo){
+        if (!this.connectionToSeqMap.containsKey(connectionID)){
+            this.connectionToSeqMap.put(connectionID, new Long(0));
+        }
+
+        long currentSeq = this.connectionToSeqMap.get(connectionID);
+        if (seqNo == currentSeq + 1){
+            // send messages to higher layer
+            for (Message message : messages){
+                onMessage(message);
+            }
+            this.connectionToSeqMap.put(connectionID, seqNo);
+            this.notifyAll();
+        } else {
+            try {
+                this.wait();
+            } catch (InterruptedException e) {}
+            onMessages(messages, connectionID, seqNo);
+        }
     }
 
     public void addEventType(String processor, String eventType) throws DeploymentException {

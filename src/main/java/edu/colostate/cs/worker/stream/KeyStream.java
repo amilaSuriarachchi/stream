@@ -19,14 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class KeyStream extends AbstractStream {
 
     // this map keeps a stream key and a node map.
-    private Map<String, Node> keyMap;
+    private Map<Object, Node> keyMap;
 
     // simply we use a round robin algorithm to allocate the keys to the nodes.
     private int nextNodeToAssign;
 
     public KeyStream(String destProcessor, String srcProcessor, List<Node> nodes, CommManager commManager) {
         super(destProcessor, srcProcessor, nodes, commManager);
-        this.keyMap = new ConcurrentHashMap<String, Node>();
+        this.keyMap = new ConcurrentHashMap<Object, Node>();
         this.nextNodeToAssign = 0;
 
     }
@@ -52,15 +52,15 @@ public class KeyStream extends AbstractStream {
             this.nextNodeToAssign = this.nextNodeToAssign % this.nodes.size();
         }
 
-        List<String> keysToRemove = new ArrayList<String>();
+        List<Object> keysToRemove = new ArrayList<Object>();
 
-        for (Map.Entry<String, Node> entry : this.keyMap.entrySet()){
+        for (Map.Entry<Object, Node> entry : this.keyMap.entrySet()){
             if (entry.getValue().equals(node)){
                 keysToRemove.add(entry.getKey());
             }
         }
 
-        for (String key : keysToRemove){
+        for (Object key : keysToRemove){
             this.keyMap.remove(key);
         }
     }

@@ -15,12 +15,12 @@ import java.util.Map;
  * Time: 1:47 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface Event {
+public abstract class Event {
 
-    public String getKey();
+    public abstract Object getKey();
 
-    public void serialize(DataOutput dataOutput) throws MessageProcessingException;
+    public abstract void serialize(DataOutput dataOutput) throws MessageProcessingException;
 
-    public void parse(DataInput dataInput) throws MessageProcessingException;
+    public abstract void parse(DataInput dataInput) throws MessageProcessingException;
 
 }

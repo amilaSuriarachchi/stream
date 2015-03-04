@@ -2,7 +2,6 @@ package edu.colostate.cs.worker.comm.server;
 
 import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.comm.exception.MessageProcessingException;
-import edu.colostate.cs.worker.config.Configurator;
 import edu.colostate.cs.worker.data.Message;
 
 import java.io.ByteArrayInputStream;
@@ -34,17 +33,21 @@ public class ServerTask implements Runnable {
     }
 
     public void run() {
+        DataConnection dataConnection = null;
         DataInput dataInput = null;
 
         while (true) {
-            dataInput = this.serverConnection.getDataInput();
+            dataConnection = this.serverConnection.getDataConnection();
+            dataInput = dataConnection.getDataInput();
             try {
                 int messageSize = dataInput.readInt();
                 byte[] message = new byte[messageSize];
                 dataInput.readFully(message);
-                this.serverConnection.releaseDataInput(dataInput);
+                int connectionID = dataConnection.getConnectionID();
+                long seqNo = dataConnection.getNextSeqNo();
+                this.serverConnection.releaseDataInput(dataConnection);
                 // process the messages
-                processMessage(message);
+                processMessage(message, connectionID, seqNo);
 
             } catch (MessageProcessingException e) {
                 this.logger.log(Level.SEVERE, "Can not parse the message");
@@ -53,6 +56,23 @@ public class ServerTask implements Runnable {
             } catch (RuntimeException e) {
                 this.logger.log(Level.SEVERE, "Can not read data from connection " + e.getMessage());
             }
+        }
+    }
+
+    private void processMessage(byte[] byteMessage, int connectionID, long seqNo) throws MessageProcessingException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteMessage);
+        DataInput dataInput = new DataInputStream(byteArrayInputStream);
+        try {
+            int numberOfMessages = dataInput.readInt();
+            List<Message> messages = new ArrayList<Message>();
+            for (int i = 0; i < numberOfMessages; i++) {
+                Message message = new Message();
+                message.parse(dataInput, this.workerContainer.getEventTypClassMap());
+                messages.add(message);
+            }
+            this.workerContainer.onMessages(messages, connectionID, seqNo);
+        } catch (IOException e) {
+            throw new MessageProcessingException("Problem in parsing the message");
         }
     }
 

@@ -1,7 +1,5 @@
 package edu.colostate.cs.worker.comm.server;
 
-import edu.colostate.cs.worker.comm.client.DataWritter;
-
 import java.io.*;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -17,26 +15,27 @@ import java.util.Queue;
  */
 public class ServerConnection {
 
-    private Queue<DataInput> freeDataInputs;
+    private Queue<DataConnection> freeDataConnections;
+    private int connectionID = 0;
 
     public ServerConnection() {
-        this.freeDataInputs = new LinkedList<DataInput>();
+        this.freeDataConnections = new LinkedList<DataConnection>();
     }
 
-    public synchronized DataInput getDataInput(){
-        DataInput returnDataInput = null;
-        while ((returnDataInput = this.freeDataInputs.poll()) == null){
+    public synchronized DataConnection getDataConnection(){
+        DataConnection returnDataConnection = null;
+        while ((returnDataConnection = this.freeDataConnections.poll()) == null){
             try {
                 this.wait();
             } catch (InterruptedException e) {
                 //TODO: handle this properly
             }
         }
-        return returnDataInput;
+        return returnDataConnection;
     }
 
-    public synchronized void releaseDataInput(DataInput dataInput){
-        this.freeDataInputs.add(dataInput);
+    public synchronized void releaseDataInput(DataConnection dataConnection){
+        this.freeDataConnections.add(dataConnection);
         this.notifyAll();
     }
 
@@ -45,7 +44,9 @@ public class ServerConnection {
         DataInput dataInput = new DataInputStream(dataReader);
         //remove the current attachment
         selectionKey.attach(dataReader);
-        this.freeDataInputs.add(dataInput);
+        this.connectionID++;
+        DataConnection dataConnection = new DataConnection(dataInput, this.connectionID);
+        this.freeDataConnections.add(dataConnection);
         this.notifyAll();
     }
 }
