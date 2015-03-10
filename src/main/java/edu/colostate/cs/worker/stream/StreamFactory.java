@@ -32,8 +32,10 @@ public class StreamFactory {
             stream = new KeyStream(destProcessor, srcProcessor, nodes, commManager);
         } else if (type.equals(Constants.STREAM_TYPE_RANDOM)) {
             stream = new RandomStream(destProcessor, srcProcessor, nodes, commManager);
-        } else if (type.equals(Constants.HASH_TYPE_RANDOM)){
+        } else if (type.equals(Constants.STREAM_TYPE_HASH)){
             stream = new HashStream(destProcessor, srcProcessor, nodes, commManager);
+        } else if (type.equals(Constants.STREAM_TYPE_LOCAL)){
+            stream = new LocalStream(destProcessor, srcProcessor, nodes, commManager);
         } else {
             throw new DeploymentException("Unknown stream type");
         }

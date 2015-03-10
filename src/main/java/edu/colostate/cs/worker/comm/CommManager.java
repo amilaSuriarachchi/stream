@@ -34,9 +34,7 @@ public class CommManager {
     }
 
     public void sendEvents(List<Message> messages, Node targetNode) throws MessageProcessingException {
-
         this.clientManager.sendEvents(messages, targetNode);
-
     }
 
     public void addClientConnections(List<Node> targetNodes) {
@@ -45,5 +43,9 @@ public class CommManager {
 
     public void registerFailureCallback(FailureCallback failureCallback) {
         this.clientManager.registerFailureCallback(failureCallback);
+    }
+
+    public void sendEvent(Message message){
+        this.serverManager.onEvent(message);
     }
 }

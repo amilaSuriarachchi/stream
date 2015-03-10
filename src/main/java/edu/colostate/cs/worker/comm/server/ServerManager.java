@@ -2,6 +2,7 @@ package edu.colostate.cs.worker.comm.server;
 
 import edu.colostate.cs.worker.WorkerContainer;
 import edu.colostate.cs.worker.config.Configurator;
+import edu.colostate.cs.worker.data.Message;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,6 +36,14 @@ public class ServerManager {
         Thread serverThread = new Thread(this.serverIOReactor);
         serverThread.start();
 
+    }
+
+    /**
+     * this method most probably invoked by the local transport send messages locally to other processes.
+     * @param message
+     */
+    public void onEvent(Message message){
+        this.workerContainer.onMessage(message);
     }
 
 }

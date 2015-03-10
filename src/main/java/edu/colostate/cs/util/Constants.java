@@ -13,7 +13,8 @@ public interface Constants {
 
     public static final String STREAM_TYPE_KEY = "key";
     public static final String STREAM_TYPE_RANDOM = "random";
-    public static final String HASH_TYPE_RANDOM = "hash";
+    public static final String STREAM_TYPE_HASH = "hash";
+    public static final String STREAM_TYPE_LOCAL = "local";
 
     public static final String CONFIG_FILE_NAME = "conf" + File.separator + "config.json";
     public static final String DEPLOY_FOLDER = "deploy";
