@@ -24,12 +24,14 @@ public class WorkerContainer implements MessageListener {
     private Map<String, Adaptor> adaptors;
     private Map<String, Class> eventTypClassMap;
     private Map<Integer, Long> connectionToSeqMap;
+    private Map<Integer, Object> connectionToLockMap;
 
     public WorkerContainer() {
         this.processors = new ConcurrentHashMap<String, Processor>();
         this.adaptors = new ConcurrentHashMap<String, Adaptor>();
         this.eventTypClassMap = new ConcurrentHashMap<String, Class>();
         this.connectionToSeqMap = new HashMap<Integer, Long>();
+        this.connectionToLockMap = new ConcurrentHashMap<Integer, Object>();
     }
 
     public void onMessage(Message message) {
@@ -37,24 +39,44 @@ public class WorkerContainer implements MessageListener {
         processor.onEvent(message.getEvent());
     }
 
-    public synchronized void onMessages(List<Message> messages, int connectionID, long seqNo){
-        if (!this.connectionToSeqMap.containsKey(connectionID)){
+    public Object getLock(int connectionID) {
+        if (!this.connectionToLockMap.containsKey(connectionID)) {
+            synchronized (this.connectionToLockMap) {
+                if (!this.connectionToLockMap.containsKey(connectionID)) {
+                    this.connectionToLockMap.put(connectionID, new Object());
+                }
+            }
+        }
+        return this.connectionToLockMap.get(connectionID);
+    }
+
+    public void onMessages(List<Message> messages, int connectionID, long seqNo) {
+
+        Object lock = getLock(connectionID);
+        synchronized (lock) {
+            sendMessages(messages, connectionID, seqNo, lock);
+        }
+    }
+
+    private void sendMessages(List<Message> messages, int connectionID, long seqNo, Object lock) {
+        if (!this.connectionToSeqMap.containsKey(connectionID)) {
             this.connectionToSeqMap.put(connectionID, new Long(0));
         }
 
         long currentSeq = this.connectionToSeqMap.get(connectionID);
-        if (seqNo == currentSeq + 1){
+        if (seqNo == currentSeq + 1) {
             // send messages to higher layer
-            for (Message message : messages){
+            for (Message message : messages) {
                 onMessage(message);
             }
             this.connectionToSeqMap.put(connectionID, seqNo);
-            this.notifyAll();
+            lock.notifyAll();
         } else {
             try {
-                this.wait();
-            } catch (InterruptedException e) {}
-            onMessages(messages, connectionID, seqNo);
+                lock.wait();
+            } catch (InterruptedException e) {
+            }
+            sendMessages(messages, connectionID, seqNo, lock);
         }
     }
 
